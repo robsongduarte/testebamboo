@@ -1,0 +1,189 @@
+<div class="content-heading">
+  <div>Lista de Designações
+  </div>
+</div>
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        Filtros
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formPermissao" class="form-horizontal" method="get" action="/">
+
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner
+                      bdColor = "rgba(245,238,238,0.8)"
+                      size = "default"
+                      color = "#00f2f2"
+                      type = "ball-clip-rotate"
+                      >
+          </ngx-spinner>
+          <!--Designado-->
+          <div class="row">
+            <div class="col">
+              <label class="col-form-label text-left">Designado</label>
+              <input class="form-control" type="text" autofocus="autofocus" maxlength="100" formControlName="designado"/>
+            </div>
+          </div>
+          <!--Empresa-->
+          <div class="row">
+            <div class="col">
+              <label class="col-form-label text-left">Empresa</label>
+                <ngx-select [allowClear]="true"
+                            [(items)]="empresas"
+                            [disabled]="false"
+                            [(ngModel)]="ngxValue"
+                            [ngModelOptions]="{standalone: true}"
+                            optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                            (select)="carregarNivel()"
+                            (remove)="removerEmpresa()"
+                            (keyup)="onKeyUp($event)"
+                            placeholder="Digite o nome da empresa"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <ng-template ngx-select-option-not-found>
+                  Empresa não encontrada!
+                </ng-template>
+                <input type="hidden" formControlName="empresa" name="empresa" [(ngModel)]="ngxValue">
+            </div>
+          </div>
+          <!--Nivel-->
+          <div class="row">
+            <div class="col">
+              <label class="col-form-label text-left">Nível</label>
+                <ngx-select [allowClear]="true"
+                            [(items)]="niveis"
+                            [disabled]="habilitarNivel"
+                            [(ngModel)]="ngxValueNivel"
+                            [ngModelOptions]="{standalone: true}"
+                            optionValueField="cdNivel" optionTextField="nmAbreviatura"
+                            (remove)="removerNivel()"
+                            placeholder="Nenhum nível selecionado"
+                            noResultsFound="Nenhum resultado encontrado.">
+                            <ng-template ngx-select-option ngx-select-option-selected let-option let-text="text">
+                              {{option.data.nmAbreviatura}} - {{option.data.nmNivel}}
+                            </ng-template>
+                </ngx-select>
+                <input type="hidden" formControlName="nivel" name="nivel" [(ngModel)]="ngxValueNivel">
+            </div>
+          </div>
+          <!--Data Vigencia-->
+          <div class="row">
+            <div class="col">
+              <label class="col-form-label text-left">Vigência Inicial</label>
+              <input class="form-control" type="date" (change)="carregarDatainicioVigencia()" formControlName="inicioVigencia" [formControl]="formPermissao.controls['inicioVigencia']"/>
+              <span
+                class="text-danger"
+                *ngIf="formPermissao.controls['inicioVigencia'].hasError('dateValidator') && (formPermissao.controls['inicioVigencia'].dirty || formPermissao.controls['inicioVigencia'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formPermissao.controls['inicioVigencia'].hasError('dataInvalida') && (formPermissao.controls['inicioVigencia'].dirty || formPermissao.controls['inicioVigencia'].touched)">
+                Data deve ser maior ou igual a 01/01/2000.
+              </span>
+            </div>
+            <div class="col">
+              <label class="col-form-label text-right">Até</label>
+              <input class="form-control" type="date" [min]="dataMinima" (change)="carregarDataFimVigencia()" formControlName="finalVigencia" [formControl]="formPermissao.controls['finalVigencia']"/>
+              <span
+                class="text-danger"
+                *ngIf="formPermissao.controls['finalVigencia'].hasError('dateValidator') && (formPermissao.controls['finalVigencia'].dirty || formPermissao.controls['finalVigencia'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formPermissao.controls['finalVigencia'].hasError('dataInvalida') && (formPermissao.controls['finalVigencia'].dirty || formPermissao.controls['finalVigencia'].touched)">
+                Data deve ser maior ou igual a 01/01/2000.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formPermissao.hasError('dataInicioMaior') && !formPermissao.controls['finalVigencia'].hasError('dataInvalida')">
+                Data fim menor que a data de início.
+              </span>
+            </div>
+          </div>
+        </fieldset>
+        <!--Botões-->
+        <fieldset>
+          <div class="panel-footer text-right">
+              <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" (click)="limpar()">Limpar</button>
+              <button style="margin: 0 5px;" type="submit" class="btn btn-primary" (click)="pesquisar()" [disabled]="formPermissao.invalid">Pesquisar</button>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="card border-dark radius-top-only mb-0">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            Lista de formulários de permissões
+          </h5>
+        </div>
+      </div>
+      <!--Tabela de retorno designado-->
+      <div class="card rounded-0 border-grey">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col" *ngFor="let head of headElements; let i = index">
+                {{head}}
+              </th>
+            </tr>
+          </thead>
+          <tbody *ngFor="let j = index; let designado of designados | paginate: { itemsPerPage: 10, currentPage: p }">
+            <tr (click)="abrirNiveis(j)" [attr.aria-expanded]="!isCollapsed" aria-controls="collapseBasic" class="clickable">
+              <td class="col-md-4">{{designado.nmDesignado}}</td>
+              <td class="col-md-5">{{designado.tipoDesignacao == null ? "" : designado.tipoDesignacao.nome}}</td>
+              <td class="col-md-3">{{designado.dsTitulo}}</td>
+              <td>
+                <div class="text-right">
+                  <button type="button" class="btn btn-info btn-sm mr-1" (click)="editar(designado)">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="designado.designacoesNiveis.length>0 && indiceTabela == j && !isCollapsed">
+              <td colspan="4" class="text-center">
+                <div  display="table-row" [collapse]="isCollapsed">
+                  <table class="table">
+                    <thead class="black white-text">
+                      <tr>
+                        <th *ngFor="let nivel of headNivel; let i = index" scope="col">
+                          {{nivel}}
+                        </th>
+                      </tr>
+                    </thead>
+                      <tbody>
+                        <tr *ngFor="let designacoesNiveis of designado.designacoesNiveis">
+                          <td>{{designacoesNiveis.nivel.nmEmpresa}}</td>
+                          <td>{{designacoesNiveis.nivel.nmAbreviatura}}</td>
+                          <td>{{designacoesNiveis.dtVigenciaInicio | date:'dd/MM/yyyy'}}</td>
+                          <td>{{designacoesNiveis.dtVigenciaFim | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                      </tbody>
+                  </table>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div *ngIf="designados.length==0">
+          <div class="alert alert-light" role="alert">
+            Nenhum registro encontrado.
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="designados.length > 0">
+          <pagination-controls previousLabel="Anterior" (click)="mudancaPagina()" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

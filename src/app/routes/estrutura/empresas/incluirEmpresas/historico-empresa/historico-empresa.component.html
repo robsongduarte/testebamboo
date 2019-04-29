@@ -1,0 +1,34 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Auditoria
+  </div>
+  <div>
+    <button type="button" class="btn btn-outline-primary" (click)="goBack()">
+      Voltar
+    </button>
+  </div>
+</div>
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        Auditoria
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body pt-0">
+      <app-historico
+        *ngIf="auditorias.length > 0"
+        [auditorias]="auditorias"
+        [config]="getConfig()">
+      </app-historico>
+      <div class="row mt-2" *ngIf="auditorias.length == 0">
+        <div class="col">
+          Não há auditorias para esse registro.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,483 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Designações Temporárias de Função
+  </div>
+</div>
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-table"></i>
+        &nbsp;
+        Designações Temporárias de Função
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formDesignacoesTemporariasIncluir" class="form-horizontal" method="get" action="/">
+        <!--Spinner-->
+        <ngx-spinner 
+          bdColor = "rgba(245,238,238,0.8)"
+          size = "default"
+          color = "#00f2f2"
+          type = "ball-clip-rotate">
+        </ngx-spinner>
+        <!--Tabs-->
+        <ngx-tabset>
+          <ngx-tab tabTitle="Dados da DTF">
+            {{formDesignacoesTemporariasIncluir.value | json}}
+            <!--Empresa, Emitente e Número do Documento-->
+            <div class="row">
+              <div class="form-group col-md-5">
+                <label class="col-form-label text-left">Empresa*</label>
+                <ngx-select [allowClear]="true"
+                            [(items)]="empresas"
+                            [disabled]="false"
+                            [(ngModel)]="ngxValueEmpresa"
+                            [ngModelOptions]="{standalone: true}"
+                            optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                            (remove)="removerEmpresa()"
+                            (select)="carregarEmitente()"
+                            (keyup)="onKeyUp($event)"
+                            placeholder="Digite o nome da empresa"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <ng-template ngx-select-option-not-found>
+                  Empresa não encontrada!
+                </ng-template>
+                <input type="hidden" formControlName="cdEmpresa" name="cdEmpresa" [(ngModel)]="ngxValueEmpresa">
+              </div>
+    
+              <div class="form-group col-md-3">
+                <label class="col-form-label text-left">Emitente*</label>
+                <ngx-select [allowClear]="true"
+                            [(items)]="niveis"
+                            [disabled]="habilitarEmitente"
+                            [(ngModel)]="ngxValueEmitente"
+                            [ngModelOptions]="{standalone: true}"
+                            optionValueField="cdNivel" optionTextField="nmAbreviatura"
+                            (remove)="removerEmitente()"
+                            (select)="carregarSignatario()"
+                            placeholder="Nenhum emitente selecionado"
+                            noResultsFound="Nenhum resultado encontrado.">
+                            <ng-template ngx-select-option ngx-select-option-selected let-option let-text="text">
+                              {{option.data.nmAbreviatura}} - {{option.data.nmNivel}}
+                            </ng-template>
+                </ngx-select>
+                <ng-template ngx-select-option-not-found>
+                  Emitente não encontrado!
+                </ng-template>
+                <input type="hidden" formControlName="cdEmitente" name="cdEmitente" [(ngModel)]="ngxValueEmitente">
+              </div>
+
+              <div class="form-group col-md-4">
+                <label class="col-form-label text-left">Emissão*</label>
+                <input class="form-control" type="date" [min]="dataMinima" formControlName="dataEmissao" [formControl]="formDesignacoesTemporariasIncluir.controls['dataEmissao']"/>
+                <span
+                  class="text-danger"
+                  *ngIf="formDesignacoesTemporariasIncluir.controls['dataEmissao'].hasError('dateValidator') && (formDesignacoesTemporariasIncluir.controls['dataEmissao'].dirty || formDesignacoesTemporariasIncluir.controls['dataEmissao'].touched)">
+                  Digite uma data válida.
+                </span>
+                <span
+                  class="text-danger"
+                  *ngIf="formDesignacoesTemporariasIncluir.controls['dataEmissao'].hasError('dataMenorHoje') && (formDesignacoesTemporariasIncluir.controls['dataEmissao'].dirty || formDesignacoesTemporariasIncluir.controls['dataEmissao'].touched)">
+                  Data deve ser maior ou igual a data de hoje.
+                </span>
+              </div>
+            </div>
+            <!--Número, Versão e Status-->
+            <div class="row">
+              <div class="form-group col-md-5">
+                <label class="col-form-label text-left">Número do documento</label>
+                <input class="form-control" type="text" [readonly]="habilitarNumero" formControlName="numeroDocumento"/>
+              </div>
+              <div class="form-group col-md-3">
+                <label class="col-form-label text-left">Versão</label>
+                <input class="form-control" type="text" [readonly]="habilitarVersao" formControlName="versao"/>
+              </div>
+              <div class="form-group col-md-4">
+                <label class="col-form-label text-left">Status</label>
+                <h2 *ngIf="codigoStatus == 'MINUTA' || codigoStatus == 'EM_ASSINATURA'"><span class="badge badge-pill badge-warning">{{status}}</span></h2>
+                <h2 *ngIf="codigoStatus == 'ASSINADO'"><span class="badge badge-pill badge-success">{{status}}</span></h2>                
+                <h2 *ngIf="codigoStatus == 'CANCELADO'"><span class="badge badge-pill badge-danger">{{status}}</span></h2>
+              </div>
+            </div>
+            <!--Status e Designado-->
+            <div class="row">
+              <div class="form-group col-md-5">
+                <label class="col-form-label text-left">Motivo*</label>
+                <ngx-select [allowClear]="true"
+                            [items]="dominiosMotivo"
+                            [disabled]="false"
+                            [(ngModel)]="ngxDominioMotivo"
+                            optionValueField="cdDominio" optionTextField="nome"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder="Selecione"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="tipoMotivo" name="tipoMotivo" [(ngModel)]="ngxDominioMotivo">
+              </div>
+            </div>
+            <!--Conteúdo-->
+            <div class="row">
+              <div class="form-group col-md-12">
+                <label class="col-form-label text-left">Conteúdo</label>
+                <textarea class="form-control" formControlName="conteudo" maxlength="4000" rows="6"></textarea>
+              </div>
+            </div>
+            <!--Signatários-->
+            <div class="row">
+              <div class="form-group col-md-12">
+                <label class="col-form-label text-left">Signatários</label>
+                <div class="input-group-append">
+                  <input class="form-control" type="text" formControlName="nmSignatario" readonly/>
+                  <button class="btn btn-info" type="button" [disabled]="habilitarSignatario" (click)="editarSignatario()" data-toggle="modal" data-target="#addEditarSignatarioModal">
+                    <i class="fa fa-edit"></i>
+                  </button>
+                  <input type="hidden" formControlName="signatarios" name="signatarios">
+                </div>
+              </div>
+            </div>
+          </ngx-tab>
+          <ngx-tab tabTitle="Formulário de Permissão" [disabled]="habilitarTabs">
+            <!--Botão incluir Formulario-->
+            <div class="row mb-1">
+              <div class="col-12 text-right">
+                <button type="button" class="btn btn-outline-primary" [disabled]="habilitarIncluir" (click)="incluirFormularioPermissao()" data-toggle="modal" data-target="#addFormularioPermissaoModal">
+                  <i class="fa fa-plus-square"></i>
+                  Incluir
+                </button>
+              </div>
+            </div>
+            <!--Tabela de Formulário de permissão-->
+            <div class="card border-dark radius-top-only mb-0">
+              <div class="card-header bg-dark text-white radius-top-only">
+                <h5 class="mb-0 pb-1 pt-1">
+                  <i class="fas fa-table"></i>
+                  &nbsp;
+                  Formulário de Permissão
+                </h5>
+              </div>
+            </div>  
+            
+            <div class="card rounded-0 border-grey">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                      <tr>
+                        <th *ngFor="let head of headElementsFormulario; let i = index" scope="col">
+                          {{head}}
+                        </th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let i = index; let listaDesignacao of listaDesignacoes | paginate: { itemsPerPage: 10, currentPage: p }">
+                      <td>{{listaDesignacao.nmSubstituido}}</td>
+                      <td>{{listaDesignacao.tipoDesignacao}}</td>
+                      <td>{{listaDesignacao.dsTitulo}}</td>
+                      <td>
+                        <div class="d-flex flex-row-reverse">
+                          <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editarFormularioPermissao(listaDesignacao)" data-toggle="modal" data-target="#addFormularioPermissaoModal"></button>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="d-flex">
+                            <button style="margin: 0 5px;" type="button" class="btn btn-danger icon-trash" *ngIf="listaDesignacao.cdDesignacao == null" (click)="excluirFormularioPermissao(listaDesignacao)"></button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div *ngIf="listaDesignacoes.length == 0">
+                <div class="alert alert-light" role="alert">
+                  Nenhum registro encontrado.
+                </div>
+              </div>
+            </div>
+            <div class="mx-auto w-50 text-center" *ngIf="formulariosPermissoes.length>0">
+              <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+            </div>
+          </ngx-tab>
+          <ngx-tab tabTitle="Anexos" [disabled]="habilitarTabs">
+            <app-anexos-incluir-designacoes></app-anexos-incluir-designacoes>
+          </ngx-tab>
+        </ngx-tabset>          
+        <div class="panel-footer text-right">
+          <span class="text-danger" *ngIf="formDesignacoesTemporariasIncluir.invalid">*Preencher todos os campos obrigatórios.</span>
+        </div>
+      </form>
+    </div>
+    <!--Botões-->  
+    <div class="card-footer text-muted">
+      <div class="panel-footer text-right">
+        <button style="margin: 0 5px;" type="button" class="btn btn-light" onClick="history.go(-1)">Voltar</button>
+        <button style="margin: 0 5px;" type="button" class="btn btn-danger" *ngIf="formDesignacoesTemporariasIncluir.value.cdDocumento > 0" [disabled]="formDesignacoesTemporariasIncluir.invalid" (click)="excluirDocumento()">Excluir</button>
+        <button style="margin: 0 5px;" type="button" class="btn btn-primary" *ngIf="codigoStatus == 'EM_ASSINATURA'" [disabled]="formDesignacoesTemporariasIncluir.invalid" (click)="Assinar()">Assinar</button>
+        <button style="margin: 0 5px;" type="button" class="btn btn-primary" *ngIf="formDesignacoesTemporariasIncluir.value.cdDocumento > 0" [disabled]="formDesignacoesTemporariasIncluir.invalid" (click)="enviarParaAssinatura()">Enviar para assinatura</button>
+        <button style="margin: 0 5px;" type="button" class="btn btn-success" [disabled]="formDesignacoesTemporariasIncluir.invalid" (click)="salvar()">Salvar</button>
+      </div>   
+    </div>    
+  </div>
+</section>
+
+<!-- Modal Formulario Permissao -->
+<div class="modal fade bd-localidade-modal-lg" id="addFormularioPermissaoModal" tabindex="-1" role="dialog" aria-labelledby="addFormularioPermissaoModalLabel" aria-hidden="true">
+  <form [formGroup]="formIncluirFormularioPermissao" class="form-horizontal" method="get" action="/">
+    <!--Spinner-->
+    <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                  size = "default"
+                  color = "#00f2f2"
+                  type = "ball-clip-rotate"
+                >
+    </ngx-spinner>
+
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white pt-3 pb-3">
+          <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+            <i class="fa fa-table"></i> Formulário Permissão DTF
+          </h5>
+          <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!--Nome do empregado substituído-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Nome do empregado substituído</label>
+              <ngx-select [allowClear]="true"
+                          [(items)]="designacoesDTO"
+                          [disabled]="false"
+                          [(ngModel)]="ngxValueDesignado"
+                          [ngModelOptions]="{standalone: true}"
+                          optionValueField="nmDesignado" optionTextField="nmDesignado"
+                          (remove)="removerEmpregado()"
+                          (select)="carregarCampos()"
+                          (keyup)="onKeyUpDesignado($event)"
+                          placeholder="Digite o nome do empregado."
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <ng-template ngx-select-option-not-found>
+                Designado não encontrado!
+              </ng-template>
+              <input type="hidden" formControlName="nmSubstituido" name="nmSubstituido" [(ngModel)]="ngxValueDesignado">
+            </div>
+          </div>
+          <!--Título do empregado substituído-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Título do empregado substituído</label>
+              <ngx-select [allowClear]="true"
+                          [(items)]="titulosSubstituidosDTO"
+                          [disabled]="habilitarCampos"
+                          [(ngModel)]="ngxValueTituloSubstituido"
+                          [ngModelOptions]="{standalone: true}"
+                          optionValueField="nmAbreviatura" optionTextField="dsTitulo"
+                          (select)="carregarTituloDesignado()"
+                          (remove)="removerTituloSubstituido()"
+                          placeholder="Selecione o título."
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <ng-template ngx-select-option-not-found>
+                Designado não encontrado!
+              </ng-template>
+              <input type="hidden" formControlName="dsTituloSubstituido" name="dsTituloSubstituido" [(ngModel)]="ngxValueTituloSubstituido">
+            </div>
+          </div>
+          <!--Tipo de Designação e Período Vigência até-->
+          <div class="row">
+            <div class="form-group col-md-4">
+              <label class="col-form-label text-left">Tipo de Designação</label>
+              <ngx-select [allowClear]="true"
+                          [items]="dominiosTipoDesignacao"
+                          [disabled]="habilitarCampos"
+                          [(ngModel)]="ngxTipoDesignacao"
+                          optionValueField="nome" optionTextField="nome"
+                          (select)="carregarTituloDesignado()"
+                          (remove)="removerTituloDesignado()"
+                          [ngModelOptions]="{standalone: true}"
+                          placeholder="Selecione"
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <input type="hidden" formControlName="tipoDesignacao" name="tipoDesignacao" [(ngModel)]="ngxTipoDesignacao">
+            </div>
+            <div class="form-group col-md-4">
+              <label class="col-form-label text-left">Período Vigência</label>
+              <input class="form-control" type="date" (change)="carregarDatainicioVigencia()" [min]="dataMinima" formControlName="dtVigenciaInicio" [formControl]="formIncluirFormularioPermissao.controls['dtVigenciaInicio']"/>
+              <span
+                class="text-danger"
+                *ngIf="formIncluirFormularioPermissao.controls['dtVigenciaInicio'].hasError('dateValidator') && (formIncluirFormularioPermissao.controls['dtVigenciaInicio'].dirty || formIncluirFormularioPermissao.controls['dtVigenciaInicio'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formIncluirFormularioPermissao.controls['dtVigenciaInicio'].hasError('dataMenorHoje') && (formIncluirFormularioPermissao.controls['dtVigenciaInicio'].dirty || formIncluirFormularioPermissao.controls['dtVigenciaInicio'].touched)">
+                Data deve ser maior ou igual a data de hoje.
+              </span>
+            </div>
+            <div class="form-group col-md-4">
+              <label class="col-form-label text-left">até</label>
+              <input class="form-control" type="date" formControlName="dtVigenciaFim" [formControl]="formIncluirFormularioPermissao.controls['dtVigenciaFim']"/>
+              <span
+                class="text-danger"
+                *ngIf="formIncluirFormularioPermissao.controls['dtVigenciaFim'].hasError('dateValidator') && (formIncluirFormularioPermissao.controls['dtVigenciaFim'].dirty || formIncluirFormularioPermissao.controls['dtVigenciaFim'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formIncluirFormularioPermissao.hasError('dataInicioMaior')">
+                Data fim menor que a data de início.
+              </span>
+            </div>                      
+          </div>
+          <!--Nome do empregado designado-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Nome do empregado designado</label>
+              <input class="form-control" type="text" maxlength="100" formControlName="nmDesignado" placeholder="Digite um nome"/>
+            </div>
+          </div>
+          <!--Título do empregado designado-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Título do empregado designado</label>
+              <input class="form-control" type="text" maxlength="100" formControlName="dsTitulo" readonly/>
+            </div>
+          </div>  
+          <!--Contador e Número do CRC-->
+          <div class="row">
+            <div class="col-md-3">
+              <br><br>
+              <div class="form-check mb-1 mr-sm-2">
+                <div class="checkbox c-checkbox">
+                  <label>
+                    <input type="checkbox" (click)="ativarCrc()" formControlName="flContador"/>
+                    <span class="fa fa-check"></span>Contador
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="col-form-label text-left">Número do CRC</label>
+              <input class="form-control" type="text" [readonly]="habilitarNumeroCrc" maxlength="20" formControlName="nrCrc" />
+            </div>
+          </div>
+          <!--Empresas-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Empresas</label>
+              <ngx-select [allowClear]="true"
+                          [multiple]="true"
+                          [(items)]="formulariosPermissoesNiveisEmpresas"
+                          [disabled]="habilitarCampos"
+                          [(ngModel)]="ngxValueEmpresas"
+                          [ngModelOptions]="{standalone: true}"
+                          optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                          placeholder="Selecione as empresas"
+                          (remove)="removerNiveisEmpresas($event, 'empresa')"
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <ng-template ngx-select-option-not-found>
+                Empresa não encontrada!
+              </ng-template>
+              <input type="hidden" formControlName="empresas" name="empresas" [(ngModel)]="ngxValueEmpresas">
+            </div>
+          </div>
+          <!--Níveis-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Níveis</label>
+              <ngx-select [allowClear]="true"
+                          [multiple]="true"
+                          [(items)]="formulariosPermissoesNiveisEmpresas"
+                          [disabled]="habilitarCampos"
+                          [(ngModel)]="ngxValueNiveis"
+                          [ngModelOptions]="{standalone: true}"
+                          optionValueField="cdNivel" optionTextField="nmAbreviatura"
+                          placeholder="Selecione os níveis"
+                          (remove)="removerNiveisEmpresas($event, 'nivel')"
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <ng-template ngx-select-option-not-found>
+                Nível não encontrado!
+              </ng-template>
+              <input type="hidden" formControlName="niveis" name="niveis" [(ngModel)]="ngxValueNiveis">
+            </div>
+          </div>
+          <!--Observação-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Observação</label>
+              <textarea class="form-control" formControlName="dsObservacao" maxlength="4000" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <!--Botões-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-success" (click)="salvarFormularioPermissao()" data-dismiss="modal">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Editar Signatario -->
+<div class="modal fade bd-signatario-modal-lg" id="addEditarSignatarioModal" tabindex="-1" role="dialog" aria-labelledby="addEditarSignatarioLabel" aria-hidden="true">
+  <form [formGroup]="formEditarSignatario" class="form-horizontal" method="get" action="/">
+    <!--Spinner-->
+    <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                  size = "default"
+                  color = "#00f2f2"
+                  type = "ball-clip-rotate"
+                >
+    </ngx-spinner>
+
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white pt-3 pb-3">
+          <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+            <i class="fa fa-table"></i> Editar Signatário
+          </h5>
+          <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!--Signatários-->
+          <div class="row">
+            <div class="form-group col-md-12">
+              <label class="col-form-label text-left">Signatários*</label>
+              <ngx-select [allowClear]="true"
+                          [(items)]="signatariosDTO"
+                          [disabled]="false"
+                          [(ngModel)]="ngxValueSignatario"
+                          [ngModelOptions]="{standalone: true}"
+                          optionValueField="cdDesignacao" optionTextField="nmDesignado"
+                          placeholder="Digite o nome do signatário"
+                          noResultsFound="Nenhum resultado encontrado.">
+              </ngx-select>
+              <ng-template ngx-select-option-not-found>
+                Signatário não encontrada!
+              </ng-template>
+              <input type="hidden" formControlName="cdSignatario" name="cdSignatario" [(ngModel)]="ngxValueSignatario">
+            </div>
+          </div>
+        </div>
+        <!--Botões-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-success" (click)="salvarSignatario()" [disabled]="formEditarSignatario.invalid" data-dismiss="modal">Salvar</button>
+        </div>
+        <div class="panel-footer text-right">
+          <span class="text-danger" *ngIf="formEditarSignatario.invalid">*Preencher todos os campos obrigatórios.</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+

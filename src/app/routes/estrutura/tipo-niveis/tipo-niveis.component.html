@@ -1,0 +1,168 @@
+
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+      Tipos de Níveis
+  </div>
+  <div>
+    <!--Botão incluir Nivel-->
+    <button type="button" class="btn btn-outline-primary" (click)="goToNew()">
+      <i class="fa fa-plus-square"></i>
+      Incluir
+    </button>
+  </div>
+</div>
+
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-search"></i>
+        &nbsp;
+        Buscar Tipo de Nível
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formTipoNiveis" class="form-horizontal" method="get" action="/">
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                        size = "default"
+                        color = "#00f2f2"
+                        type = "ball-clip-rotate">
+          </ngx-spinner>
+
+          <div class="row">
+            <!-- Nome -->
+            <div class="col">
+              <label class="col-form-label text-left">Nome</label>
+              <input type="text" class="form-control" formControlName="nome" placeholder="Nome" />
+            </div>
+            <!-- Abreviatura -->
+            <div class="col">
+              <label class="col-form-label text-left">Abreviatura</label>
+              <input type="text" class="form-control" formControlName="abreviatura" placeholder="Sigla" />
+            </div>
+          </div>
+
+          <!-- Situacao -->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Situação</label>
+                <ngx-select [allowClear]="false"
+                            [items]="situacoes"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacao"
+                            optionValueField="id"
+                            optionTextField="situacao"
+                            [ngModelOptions]="{ standalone: true }"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="situacao" [(ngModel)]="ngxSituacao">
+            </div>
+          </div>
+        </fieldset>
+        <!--Botões-->
+        <fieldset class="mb-0">
+          <div class="panel-footer text-right">
+              <button
+                type="button"
+                class="btn btn-outline-primary ml-1"
+                (click)="limpar()">
+                Limpar
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary ml-1"
+                [disabled]="formTipoNiveis.invalid"
+                (click)="pesquisar()">
+                Pesquisar
+              </button>
+          </div>
+          <div class="panel-footer text-right">
+            <span class="text-danger" *ngIf="formTipoNiveis.invalid">
+              *Preencher todos os campos obrigatórios.
+            </span>
+          </div>
+        </fieldset>
+      </form>
+
+      <!--Tabela de Tipo Niveis-->
+      <div class="card mb-0 border-dark radius-top-only">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            &nbsp;
+            Tipos de Níveis
+          </h5>
+        </div>
+      </div>
+      <div class="card rounded-0 border-grey">
+        <!--Pesquisa Niveis-->
+        <form [formGroup]="formPesquisaTipoNivel">
+          <div class="form-row align-items-center">
+            <div class="col">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text rounded-0">
+                    <i class="fa fa-search"></i>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="pesquisaTipoNivel"
+                  [(ngModel)]="tipoNivelFilter.nmTipoDeNivel"
+                  [readonly]="tipoNiveis.length == 0"
+                  placeholder="Pesquisar tipos de níveis." />
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th *ngFor="let head of headTable" scope="col" [class]="head.class">
+                    {{ head.name }}
+                  </th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i = index; let tipoNivel of tipoNiveis | filterBy: tipoNivelFilter | paginate: { itemsPerPage: 10, currentPage: p }">
+                <td>{{ tipoNivel.nmTipoDeNivel }}</td>
+                <td class="text-center">{{ tipoNivel.nmAbreviatura }}</td>
+                <td *ngIf="tipoNivel.flAtivo" class="text-center">
+                  Ativa
+                </td>
+                <td *ngIf="!tipoNivel.flAtivo" class="text-center">
+                  Inativa
+                </td>
+                <td>
+                  <div class="d-flex flex-row-reverse">
+                    <button type="button" class="btn btn-info ml-1" (click)="editar(tipoNivel)">
+                      <i class="fa fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="tipoNiveis.length == 0 || (tipoNiveis | filterBy: tipoNivelFilter).length == 0">
+            <div class="alert alert-light" role="alert">
+              Nenhum registro encontrado.
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="tipoNiveis.length > 0">
+          <pagination-controls
+            previousLabel="Anterior"
+            nextLabel="Próximo"
+            (pageChange)="p = $event">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

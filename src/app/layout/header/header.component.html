@@ -1,0 +1,54 @@
+<!-- START Top Navbar-->
+<nav class="navbar topnavbar" role="navigation">
+    <!-- START navbar header-->
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#/">
+            <div class="brand-logo">
+                <img class="img-fluid" src="assets/img/logo.png" alt="App Logo" />
+            </div>
+            <div class="brand-logo-collapsed">
+                <img class="img-fluid" src="assets/img/favicon.png" alt="Enge" />
+            </div>
+        </a>
+    </div>
+    <!-- END navbar header-->
+    <!-- START Left navbar-->
+    <ul class="navbar-nav mr-auto flex-row">
+        <li class="nav-item">
+            <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+            <a class="nav-link d-none d-md-block d-lg-block d-xl-block" trigger-resize="" (click)="toggleCollapsedSideabar()" *ngIf="!isCollapsedText()">
+                <em class="fas fa-bars"></em>
+            </a>
+            <!-- Button to show/hide the sidebar on mobile. Visible on mobile only.-->
+            <a class="nav-link sidebar-toggle d-md-none" (click)="settings.toggleLayoutSetting('asideToggled'); $event.stopPropagation()">
+                <em class="fas fa-bars"></em>
+            </a>
+        </li>
+        <!-- START User avatar toggle-->
+        <li class="nav-item">
+          <a class="nav-link d-none d-md-block d-lg-block d-xl-block">
+					<span>
+						<b class="sigla">GOVC</b>
+					</span>
+          </a>
+        </li>
+        <!-- END User avatar toggle-->
+    </ul>
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown" style="text">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <a class="dropdown-item" href="#">Something else here</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Separated link</a>
+        </div>
+      </li>
+    </ul>
+  <ul>
+
+  </ul>
+    <!-- END Left navbar-->
+</nav>
+<!-- END Top Navbar-->

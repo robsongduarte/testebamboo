@@ -1,0 +1,59 @@
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: kube-system
+  name: govc-aws-web-deployment
+  labels:
+    app: govc-aws-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: govc-aws-web
+  template:
+    metadata:
+      labels:
+        app: govc-aws-web
+    spec:
+      containers:
+      - name: govc-aws-web
+        image: 116762053366.dkr.ecr.us-east-1.amazonaws.com/govc-aws-web:__TAG__
+        ports:
+        - containerPort: 80
+
+---
+# Service
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: kube-system
+  name: govc-aws-web-service
+spec:
+  selector:
+    app: govc-aws-web
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+
+---
+# Ingress
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  namespace: kube-system
+  name: govc-aws-web-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.frontend.passHostHeader: 'true'
+spec:
+  rules:
+  - host: govc-aws-web.dev-hmg.engie.internal
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: govc-aws-web-service
+          servicePort: http

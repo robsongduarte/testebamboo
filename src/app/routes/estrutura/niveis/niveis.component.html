@@ -1,0 +1,172 @@
+
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+      Níveis
+  </div>
+  <div>
+    <!--Botão incluir Nivel-->
+    <button type="button" class="btn btn-outline-primary" (click)="incluirNivel()">
+      <i class="fa fa-plus-square"></i>
+      Incluir
+    </button>
+  </div>
+</div>
+
+<section>  
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-search"></i>
+        &nbsp;
+        Buscar Nível
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formNiveis" class="form-horizontal" method="get" action="/">
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                        size = "default"
+                        color = "#00f2f2"
+                        type = "ball-clip-rotate">
+          </ngx-spinner>
+
+          <!--Empresa-->
+          <div class="row">
+            <div class="col">
+              <label class="col-form-label text-left">Empresa*</label>
+                <ngx-select [allowClear]="true"
+                            [(items)]="empresas"
+                            [disabled]="false"
+                            [(ngModel)]="ngxValueEmpresa"
+                            [ngModelOptions]="{standalone: true}"
+                            optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                            (remove)="removerEmpresa()"
+                            (keyup)="onKeyUp($event)"
+                            placeholder="Digite o nome da empresa"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <ng-template ngx-select-option-not-found>
+                  Empresa não encontrada!
+                </ng-template>
+                <input type="hidden" formControlName="cdEmpresa" name="cdEmpresa" [(ngModel)]="ngxValueEmpresa">
+            </div>
+          </div>
+          <!--Situacao-->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Situação</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsSituacao"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacao"
+                            optionValueField="id" optionTextField="situacao"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>    
+                <input type="hidden" formControlName="flAtivo" name="flAtivo" [(ngModel)]="ngxSituacao">
+            </div>         
+          </div>   
+          <!--Data Vigencia-->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Vigência Inicial*</label>
+              <input class="form-control" type="date" (change)="carregarDataInicioVigencia()" formControlName="dtVigenciaInicio" [formControl]="formNiveis.controls['dtVigenciaInicio']"/>
+              <span
+                class="text-danger"
+                *ngIf="formNiveis.controls['dtVigenciaInicio'].invalid && (formNiveis.controls['dtVigenciaInicio'].dirty || formNiveis.controls['dtVigenciaInicio'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formNiveis.controls['dtVigenciaInicio'].hasError('dataInvalida') && (formNiveis.controls['dtVigenciaInicio'].dirty || formNiveis.controls['dtVigenciaInicio'].touched)">
+                Data deve ser maior ou igual a 01/01/2000.
+              </span>
+            </div>
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-right">Até</label>
+              <input class="form-control" type="date" [min]="dataMinima" (change)="carregarDataFimVigencia()" formControlName="dtVigenciaFim" [formControl]="formNiveis.controls['dtVigenciaFim']"/>
+              <span
+                class="text-danger"
+                *ngIf="formNiveis.controls['dtVigenciaFim'].hasError('dateValidator') && (formNiveis.controls['dtVigenciaFim'].dirty || formNiveis.controls['dtVigenciaFim'].touched)">
+                Digite uma data válida.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formNiveis.hasError('dataInicioMaior') && !formNiveis.controls['dtVigenciaFim'].hasError('dataInvalida')">
+                Data fim menor que a data de início.
+              </span>
+              <span
+                class="text-danger"
+                *ngIf="formNiveis.controls['dtVigenciaFim'].hasError('dataInvalida') && (formNiveis.controls['dtVigenciaFim'].dirty || formNiveis.controls['dtVigenciaFim'].touched)">
+                Data deve ser maior ou igual a 01/01/2000.
+              </span>
+            </div>
+          </div>       
+        </fieldset>
+        <!--Botões-->
+        <fieldset>
+          <div class="panel-footer text-right">
+              <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" (click)="limpar()">Limpar</button>
+              <button style="margin: 0 5px;" type="submit" class="btn btn-primary" [disabled]="formNiveis.invalid" (click)="pesquisar()">Pesquisar</button>
+          </div>
+          <div class="panel-footer text-right"> 
+            <span class="text-danger" *ngIf="formNiveis.invalid">*Preencher todos os campos obrigatórios.</span>
+          </div>
+        </fieldset>
+      </form>
+      <!--Tabela de Niveis-->
+      <div class="card mb-0 border-dark radius-top-only">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            &nbsp;
+            Níveis
+          </h5>
+        </div>
+      </div>     
+      <div class="card rounded-0 border-grey">
+        <!--Pesquisa Niveis-->
+        <form [formGroup]="formPesquisaNivel" class="form-horizontal">
+          <div class="form-group input-group">
+            <div class="input-group-text"><i class="fa fa-search"></i></div>
+            <input formControlName="pesquisaNivel" [(ngModel)]="nivelFilter.nivel" [readonly]="niveis.length==0" placeholder="Pesquisa por niveis." type="text" class="form-control">
+          </div>
+        </form>     
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th *ngFor="let head of headElements; let i = index" scope="col">
+                    {{head}}
+                  </th>
+                </tr>
+            </thead>
+            <tbody>                  
+              <tr *ngFor="let i = index; let nivel of niveis | filterBy: nivelFilter | paginate: { itemsPerPage: 10, currentPage: p }">
+                <td>{{nivel.nivel}}</td>   
+                <td>{{nivel.dtVigenciaInicio | date:'dd/MM/yyyy'}}</td>
+                <td>{{nivel.dtVigenciaFim | date:'dd/MM/yyyy'}}</td>   
+                <td>
+                  <div class="d-flex flex-row-reverse">
+                    <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editar(nivel)"></button>
+                  </div>
+                </td>           
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="niveis.length==0 || (niveis | filterBy: nivelFilter).length == 0">
+            <div class="alert alert-light" role="alert">
+              Nenhum registro encontrado.
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="niveis.length>0">
+          <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

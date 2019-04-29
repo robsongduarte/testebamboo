@@ -1,0 +1,114 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Cargos
+  </div>
+  <div>
+    <button type="button" class="btn btn-outline-primary" (click)="incluirCargo()">
+      <i class="fa fa-plus-square"></i>
+      Incluir
+    </button>
+  </div>
+</div>
+
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-search"></i>
+        &nbsp;
+        Buscar Cargos
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formCargo" class="form-horizontal" method="get" action="/">
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                        size = "default"
+                        color = "#00f2f2"
+                        type = "ball-clip-rotate">
+          </ngx-spinner>
+          <!--Cargo e Situacao-->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Cargo</label>
+              <input class="form-control" type="text" formControlName="nmCargo" autofocus="autofocus" placeholder="Informe um nome ou parte dele."/>
+            </div>
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Situação</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsSituacao"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacao"
+                            optionValueField="id" optionTextField="situacao"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="flAtivo" name="flAtivo" [(ngModel)]="ngxSituacao">
+            </div>
+          </div>
+        </fieldset>
+        <!--Botões-->
+        <fieldset>
+          <div class="panel-footer text-right">
+              <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" (click)="limpar()">Limpar</button>
+              <button style="margin: 0 5px;" type="submit" class="btn btn-primary" (click)="pesquisar()">Pesquisar</button>
+          </div>
+        </fieldset>
+      </form>
+      <!--Tabela de Cargos-->
+      <div class="card mb-0 border-dark radius-top-only">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            &nbsp;
+            Cargos
+          </h5>
+        </div>
+      </div>
+      <div class="card rounded-0 border-grey">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th *ngFor="let head of headElements; let i = index" scope="col">
+                    {{head}}
+                  </th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i = index; let cargo of cargos | paginate: { itemsPerPage: 10, currentPage: p }">
+                <td>{{cargo.tipoCargo.nome}}</td>
+                <td>{{cargo.flAtivo == true ? 'Ativa' : 'Inativa'}}</td>
+                <td>
+                  <div class="d-flex flex-row-reverse">
+                    <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editar(cargo)"></button>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex">
+                    <label class="switch switch-lg m-0">
+                      <input type="checkbox" [checked]="cargo.flAtivo" (click)="inativar(cargo, i, $event)"/>
+                      <span></span>
+                    </label>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="cargos.length==0">
+            <div class="alert alert-light" role="alert">
+              Nenhum registro encontrado.
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="cargos.length>0">
+          <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

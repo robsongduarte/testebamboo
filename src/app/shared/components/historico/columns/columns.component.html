@@ -1,0 +1,23 @@
+<ng-container *ngIf="config.visible">
+  <ng-container *ngIf="isChildren">
+    <div class="col-sm-12 mb-2 border border-left-5 rounded-left"
+      [class.border-success]="auditoria.insert()"
+      [class.border-info]="auditoria.update()"
+      [class.border-danger]="auditoria.delete()">
+      <div
+        class="row mb-1"
+        app-column
+        [column]="column"
+        *ngFor="let column of columns">
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isChildren">
+    <div
+      class="row mb-1"
+      app-column
+      [column]="column"
+      *ngFor="let column of columns">
+    </div>
+  </ng-container>
+</ng-container>

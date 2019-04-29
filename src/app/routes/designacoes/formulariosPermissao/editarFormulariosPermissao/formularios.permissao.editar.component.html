@@ -1,0 +1,421 @@
+<div class="content-heading d-flex">
+    <div class="mr-auto">
+      Designação
+    </div>
+    <div >
+      <app-button-historico label="Auditoria" [link]="getLinkHistorico()"></app-button-historico>
+    </div>
+  </div>
+
+   <!--Spinner-->
+  <ngx-spinner
+    bdColor = "rgba(245,238,238,0.8)"
+    size = "default"
+    color = "#00f2f2"
+    type = "ball-clip-rotate"
+    >
+  </ngx-spinner>
+
+  <!-- START card-->
+  <section>
+    <div class="card border-dark radius-top-only mb-0">
+      <div class="card-header bg-dark text-white radius-top-only">
+        <h5 class="mb-0 pb-1 pt-1">
+          Formulário de Permissão
+        </h5>
+      </div>
+    </div>
+    <div class="card rounded-0 border-grey">
+      <div class="card-body">
+        <form [formGroup]="formEditar" class="form-horizontal" method="get" action="/">
+          <!--Matricula - Nome-->
+          <fieldset>
+            <div class="row">
+                <div class="col-md-3">
+                  <label class="col-form-label text-left">Matrícula*</label>
+                  <input class="form-control" type="text" formControlName="matricula" mask="00000000000000000000"/>
+                </div>
+                <div class="col">
+                  <label class="col-form-label text-left">Nome*</label>
+                  <input class="form-control" type="text" maxlength="100" formControlName="nmDesignado" [formControl]="formEditar.controls['nmDesignado']"/>
+                  <span class="text-danger" *ngIf="formEditar.controls['nmDesignado'].hasError('pattern')">Permitido somente texto.</span>
+                </div>
+            </div>
+          </fieldset>
+          <!--Email-->
+          <fieldset>
+            <div class="row">
+                <div class="col">
+                  <label class="col-form-label text-left">Email*</label>
+                  <input type="email" class="form-control" placeholder="mail@example.com" maxlength="100" formControlName="email" [formControl]="formEditar.controls['email']">
+                  <span class="text-danger" *ngIf="formEditar.controls['email'].hasError('email') && (formEditar.controls['email'].dirty || formEditar.controls['email'].touched)">Digite um email valido.</span>
+                </div>
+            </div>
+          </fieldset>
+          <!--Descrição do titulo e cargo-->
+          <fieldset>
+            <div class="row">
+                <div class="col">
+                  <label class="col-form-label text-right">Título</label>
+                  <input class="form-control" type="text" maxlength="100" formControlName="dsTitulo"/>
+                </div>
+              <div class="col">
+                <label class="col-form-label text-right">Cargo</label>
+                <input class="form-control" type="text" maxlength="100" formControlName="dsCargo" [formControl]="formEditar.controls['dsCargo']"/>
+                <span class="text-danger" *ngIf="formEditar.controls['dsCargo'].hasError('pattern')">Permitido somente texto.</span>
+              </div>
+            </div>
+          </fieldset>
+          <!--Contador e Número do CRC-->
+          <fieldset>
+              <div class="row">
+                <div class="col-md-2">
+                  <br><br>
+                  <div class="form-check mb-1 mr-sm-2">
+                    <div class="checkbox c-checkbox">
+                      <label>
+                        <input type="checkbox" (click)="ativarCrc()" formControlName="flContador"/>
+                        <span class="fa fa-check"></span>Contador
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label class="col-form-label text-left">Número do CRC</label>
+                  <input class="form-control" type="text" [readonly]="habilitarNumeroCrc" maxlength="20" formControlName="nrCrc" />
+                </div>
+              </div>
+          </fieldset>
+          <!--Tipo de Designação-->
+          <fieldset>
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">Tipo de Designação</label>
+                  <input class="form-control" type="text" formControlName="tipoDesignacaoNome" readonly/>
+                </div>
+            </div>
+          </fieldset>
+          <!--Observação-->
+          <fieldset>
+            <div class="row">
+              <div class="col">
+                <label class="col-form-label text-left">Observação</label>
+                <textarea class="form-control" formControlName="dsObservacao" maxlength="4000" rows="3"></textarea>
+              </div>
+            </div>
+          </fieldset>
+          <!--Tabela de Designações Niveis-->
+          <div class="card mb-0 border-dark radius-top-only">
+            <div class="card-header bg-dark text-white radius-top-only">
+              <h5 class="mb-0 pb-1 pt-1">
+                <i class="fa fa-table"></i>
+                Designações Níveis
+              </h5>
+            </div>
+          </div>
+          <div class="card rounded-0 border-grey">
+            <div class="table-responsive">
+                <div class="card">
+                  <table class="table table-striped">
+                    <thead>
+                        <tr>
+                          <th *ngFor="let head of headElements; let i = index" scope="col">
+                            {{head}}
+                          </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let designacaoNivel of designacoesNiveis; let i = index">
+                          <td>{{designacaoNivel.nivel.nmEmpresa}}</td>
+                          <td>{{designacaoNivel.nivel.nmAbreviatura}}</td>
+                          <td>{{designacaoNivel.dtVigenciaInicio | date:'dd/MM/yyyy'}}</td>
+                          <td>{{designacaoNivel.dtVigenciaFim | date:'dd/MM/yyyy'}}</td>
+                          <!--td>
+                            <div class="text-right">
+                              <button type="button" class="btn btn-info btn-sm mr-1" (click)="editar(designacaoNivel)" data-toggle="modal" data-target="#nivelModal">
+                                <i class="fa fa-edit"></i>
+                              </button>
+                              <button type="button" class="btn btn-danger btn-sm mr-1" (click)="excluir(designacaoNivel.cdDesignacaoNivel, i)">
+                                <i class="icon-trash"></i>
+                              </button>
+                            </div>
+                          </td-->
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+            <!--Botão adicionar nivel>
+            <div class="panel-footer text-right mb-4">
+              <button type="button" class="btn btn-info mr-1" (click)="adicionarNivel()" data-toggle="modal" data-target="#addNivelModal">
+                <i class="fa fa-plus-square"></i>
+                Adicionar
+              </button>
+            </div-->
+          </div>
+          <!--Botões-->
+          <div class="panel-footer text-right">
+              <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" *ngIf="cdNivel == 0" onClick="history.go(-1)">Voltar</button>
+              <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" *ngIf="cdNivel > 0" (click)="voltarNivel()">Voltar Nivel</button>
+              <button style="margin: 0 5px;" type="button" class="btn btn-success" [disabled]="formEditar.invalid" (click)="salvar()">Salvar</button>
+          </div>
+          <div class="panel-footer text-right">
+          	<span class="text-danger" *ngIf="formEditar.invalid">*Preencher todos os campos obrigatórios.</span>
+          </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade bd-nivel-modal-lg" id="nivelModal" tabindex="-1" role="dialog" aria-labelledby="nivelModalLabel" aria-hidden="true">
+  <form [formGroup]="formDesignacaoNivel" class="form-horizontal" method="get" action="/">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white pt-3 pb-3">
+          <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+            <i class="fa fa-table"></i> Editar Designação Nível
+          </h5>
+          <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <!--Vigência Inicial e Final-->
+            <div class="row">
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Vigência Inicial*</label>
+                <input class="form-control" type="date" (change)="carregarDatainicioVigencia('formDesignacaoNivel')" formControlName="dtVigenciaInicio" [formControl]="formDesignacaoNivel.controls['dtVigenciaInicio']"/>
+                <span
+                  class="text-danger"
+                  *ngIf="formDesignacaoNivel.controls['dtVigenciaInicio'].invalid && (formDesignacaoNivel.controls['dtVigenciaInicio'].dirty || formDesignacaoNivel.controls['dtVigenciaInicio'].touched)">
+                  Digite uma data válida.
+                </span>
+              </div>
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Vigência Final</label>
+                <input class="form-control" type="date" [min]="dataMinima" formControlName="dtVigenciaFim" [formControl]="formDesignacaoNivel.controls['dtVigenciaFim']"/>
+                <span
+                  class="text-danger"
+                  *ngIf="formDesignacaoNivel.controls['dtVigenciaFim'].hasError('dateValidator') && (formDesignacaoNivel.controls['dtVigenciaFim'].dirty || formDesignacaoNivel.controls['dtVigenciaFim'].touched)">
+                  Digite uma data válida.
+                </span>
+                <span
+                  class="text-danger"
+                  *ngIf="formDesignacaoNivel.hasError('dataInicioMaior')">
+                  Data fim menor que a data de início.
+                </span>
+              </div>
+            </div>
+            <!--Nivel-->
+            <div class="row">
+              <div class="col">
+                <label class="col-form-label text-left">Nivel</label>
+                <input class="form-control" type="text" formControlName="nivelDescricao" name="nivelDescricao" readonly>
+                <input class="form-control" type="hidden" formControlName="nivel" name="nivel" [(ngModel)]="ngxValueNivel">
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal" [disabled]="formDesignacaoNivel.invalid" (click)="salvarNivel()">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+  <!-- Modal -->
+  <div class="modal fade bd-nivel-modal-lg" id="nivelModal" tabindex="-1" role="dialog" aria-labelledby="nivelModalLabel" aria-hidden="true">
+    <form [formGroup]="formDesignacaoNivel" class="form-horizontal" method="get" action="/">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white pt-3 pb-3">
+            <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+              <i class="fa fa-table"></i> Editar Designação Nível
+            </h5>
+            <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <fieldset>
+              <!--Vigência Inicial e Final-->
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">Vigência Inicial*</label>
+                  <input class="form-control" type="date" (change)="carregarDatainicioVigencia('formDesignacaoNivel')" formControlName="dtVigenciaInicio" [formControl]="formDesignacaoNivel.controls['dtVigenciaInicio']"/>
+                  <span
+                    class="text-danger"
+                    *ngIf="formDesignacaoNivel.controls['dtVigenciaInicio'].invalid && (formDesignacaoNivel.controls['dtVigenciaInicio'].dirty || formDesignacaoNivel.controls['dtVigenciaInicio'].touched)">
+                    Digite uma data válida.
+                  </span>
+                </div>
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">Vigência Final</label>
+                  <input class="form-control" type="date" [min]="dataMinima" formControlName="dtVigenciaFim" [formControl]="formDesignacaoNivel.controls['dtVigenciaFim']"/>
+                  <span
+                    class="text-danger"
+                    *ngIf="formDesignacaoNivel.controls['dtVigenciaFim'].hasError('dateValidator') && (formDesignacaoNivel.controls['dtVigenciaFim'].dirty || formDesignacaoNivel.controls['dtVigenciaFim'].touched)">
+                    Digite uma data válida.
+                  </span>
+                  <span
+                    class="text-danger"
+                    *ngIf="formDesignacaoNivel.hasError('dataInicioMaior')">
+                    Data fim menor que a data de início.
+                  </span>
+                </div>
+              </div>
+              <!--Nivel-->
+              <div class="row">
+                <div class="col">
+                  <label class="col-form-label text-left">Nivel</label>
+                  <input class="form-control" type="text" formControlName="nivelDescricao" name="nivelDescricao" readonly>
+                  <input class="form-control" type="hidden" formControlName="nivel" name="nivel" [(ngModel)]="ngxValueNivel">
+                </div>
+              </div>
+            </fieldset>
+          </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+              <button type="button" class="btn btn-success" data-dismiss="modal" [disabled]="formDesignacaoNivel.invalid" (click)="salvarNivel()">Salvar alterações</button>
+            </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal Nivel -->
+  <div class="modal fade bd-nivel-modal-lg" id="addNivelModal" tabindex="-1" role="dialog" aria-labelledby="addNivelModalLabel" aria-hidden="true">
+      <form [formGroup]="formAdicionarNivel" class="form-horizontal" method="get" action="/">
+        <!--Spinner-->
+        <ngx-spinner
+              bdColor = "rgba(245,238,238,0.8)"
+              size = "default"
+              color = "#00f2f2"
+              type = "ball-clip-rotate"
+              >
+        </ngx-spinner>
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-dark text-white pt-3 pb-3">
+              <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+                <i class="fa fa-table"></i> Adicionar Nível
+              </h5>
+              <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <fieldset>
+                <!--Empresa-->
+                <div class="row">
+                  <div class="col">
+                    <label class="col-form-label text-left">Empresa*</label>
+                      <ngx-select [allowClear]="true"
+                                  [(items)]="empresas"
+                                  [disabled]="false"
+                                  [(ngModel)]="ngxValueEmpresa"
+                                  [ngModelOptions]="{standalone: true}"
+                                  optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                                  (select)="carregarNivel()"
+                                  (remove)="removerEmpresa()"
+                                  (keyup)="onKeyUp($event)"
+                                  placeholder="Digite o nome da empresa"
+                                  noResultsFound="Nenhum resultado encontrado.">
+                      </ngx-select>
+                      <input type="hidden" formControlName="empresa" name="empresa" [(ngModel)]="ngxValueEmpresa">
+                  </div>
+                </div>
+                <!--Nivel-->
+                <div class="row">
+                  <div class="col">
+                    <label class="col-form-label text-left">Nível*</label>
+                    <ngx-select [allowClear]="true"
+                                [(items)]="niveisDesignacoes"
+                                [disabled]="habilitarNivel"
+                                [(ngModel)]="ngxValueNivel"
+                                [ngModelOptions]="{standalone: true}"
+                                optionValueField="cdNivel" optionTextField="nmAbreviatura"
+                                (select)="montarNivel()"
+                                (remove)="removerNivel()"
+                                placeholder="Nenhum nível selecionado"
+                                noResultsFound="Nenhum resultado encontrado.">
+                                <ng-template ngx-select-option ngx-select-option-selected let-option let-text="text">
+                                  {{option.data.nmAbreviatura}} - {{option.data.nmNivel}}
+                                </ng-template>
+                    </ngx-select>
+                    <input type="hidden" formControlName="nivel" name="nivel" [(ngModel)]="ngxValueNivel">
+                  </div>
+                </div>
+                <!--Nome Abreviatura e Tipo Designação-->
+                <div class="row">
+                  <div class="col-md-6">
+                    <label class="col-form-label text-left">Nome Abreviatura</label>
+                    <input class="form-control" type="text" formControlName="nmAbreviatura" readonly/>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="col-form-label text-left">Tipo Designação</label>
+                    <input class="form-control" type="text" formControlName="tipoDesignacao" readonly/>
+                  </div>
+                </div>
+                <!--Vigência Inicial e Final-->
+                <div class="row">
+                  <div class="col-md-6">
+                    <label class="col-form-label text-left">Vigência Inicial*</label>
+                    <input class="form-control" type="date" (change)="carregarDatainicioVigencia('formAdicionarNivel')" formControlName="dtVigenciaInicio" [formControl]="formAdicionarNivel.controls['dtVigenciaInicio']"/>
+                    <span
+                      class="text-danger"
+                      *ngIf="formAdicionarNivel.controls['dtVigenciaInicio'].invalid && (formAdicionarNivel.controls['dtVigenciaInicio'].dirty || formAdicionarNivel.controls['dtVigenciaInicio'].touched)">
+                      Digite uma data válida.
+                    </span>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="col-form-label text-left">Vigência Final</label>
+                    <input class="form-control" type="date" [min]="dataMinima" formControlName="dtVigenciaFim"/>
+                    <span
+                      class="text-danger"
+                      *ngIf="formAdicionarNivel.controls['dtVigenciaFim'].hasError('dateValidator') && (formAdicionarNivel.controls['dtVigenciaFim'].dirty || formAdicionarNivel.controls['dtVigenciaFim'].touched)">
+                      Digite uma data válida.
+                    </span>
+                    <span
+                      class="text-danger"
+                      *ngIf="formAdicionarNivel.hasError('dataInicioMaior')">
+                      Data fim menor que a data de início.
+                    </span>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+              <!--Botões-->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-success" data-dismiss="modal" [disabled]="formAdicionarNivel.invalid" (click)="adicionar()">Adicionar</button>
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  <ng-template #content let-d="dismiss" let-c="close">
+    <div class="modal-header bg-dark text-white pt-3 pb-3 rounded-0">
+      <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+        <i class="fa fa-heading"></i> Histórico Designação Nível
+      </h5>
+      <button type="button" class="close text-white pt-2 pb-2" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body pt-0">
+      <app-historico
+        *ngIf="auditorias.length > 0"
+        [auditorias]="auditorias"
+        [config]="getConfig()">
+      </app-historico>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="c('Save click')">Save</button>
+    </div>
+  </ng-template>

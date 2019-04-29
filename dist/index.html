@@ -1,0 +1,27 @@
+<!doctype html>
+<script>  
+    // !important: You want to give this variable(var googleLoaded = false;). This is used to run multiple chart in your jade.
+    var googleLoaded = false;
+    // !important: Define which chart packages to preload.Because this package uses ChartWrappers you can use any chart type that Google supports, but if it // isn't loaded it will load it on demand. 
+    var googleChartsPackagesToLoad = ['geochart'];
+</script>
+<html lang="pt-br, en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>GOVC</title>
+        <base href="/">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link rel="shortcut icon" type="image/png" href="img/favicon_.png">
+        <link rel="stylesheet" href="https://rawgit.com/dabeng/OrgChart/master/demo/css/jquery.orgchart.css">
+    </head>
+
+    <body>
+        <app-root></app-root>        
+        <div class="preloader">
+            <div class="preloader-progress">
+                <div class="preloader-progress-bar"></div>
+            </div>
+        </div>
+    <script type="text/javascript" src="runtime.js"></script><script type="text/javascript" src="polyfills.js"></script><script type="text/javascript" src="styles.js"></script><script type="text/javascript" src="scripts.js"></script><script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="main.js"></script></body>
+</html>

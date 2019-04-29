@@ -1,0 +1,136 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Empresas
+  </div>
+  <div>
+    <button type="button" class="btn btn-outline-primary" (click)="incluirEmpresa()">
+      <i class="fa fa-plus-square"></i>
+      Incluir
+    </button>
+  </div>
+</div>
+
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-search"></i>
+        &nbsp;
+        Buscar Empresa
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formEmpresa" class="form-horizontal" method="get" action="/">
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                       size = "default"
+                       color = "#00f2f2"
+                       type = "ball-clip-rotate">
+          </ngx-spinner>
+          <!--Empresa e Sigla-->
+          <div class="row">
+            <div class="form-group col-md-8">
+              <label class="col-form-label text-left">Empresa</label>
+              <input class="form-control" type="text" formControlName="nmEmpresa" autofocus="autofocus" placeholder="Informe um nome ou parte dele"/>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="col-form-label text-left">Sigla</label>
+                <input class="form-control" type="text" formControlName="nmSigla" placeholder="ABC, XYZ"/>
+              </div>
+          </div>
+          <!--Tipo Empresa e Situação-->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Tipo Empresa</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsTipoEmpresa"
+                            [disabled]="false"
+                            [(ngModel)]="ngxTipoEmpresa"
+                            optionValueField="id" optionTextField="tipo"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="tipoEmpresa" name="tipoEmpresa" [(ngModel)]="ngxTipoEmpresa">
+            </div>
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Situação</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsSituacao"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacao"
+                            optionValueField="id" optionTextField="situacao"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="flAtivo" name="flAtivo" [(ngModel)]="ngxSituacao">
+            </div>
+          </div>
+        </fieldset>
+        <!--Botões-->
+        <fieldset>
+        <div class="panel-footer text-right">
+            <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" (click)="limpar()">Limpar</button>
+            <button style="margin: 0 5px;" type="submit" class="btn btn-primary" (click)="pesquisar()">Pesquisar</button>
+        </div>
+      </fieldset>
+      </form>
+
+      <!--Tabela de Empresas-->
+      <div class="card mb-0 border-dark radius-top-only">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            &nbsp;
+            Empresas
+          </h5>
+        </div>
+      </div>
+      <div class="card rounded-0 border-grey">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th *ngFor="let head of headElements; let i = index" scope="col">
+                    {{head}}
+                  </th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i = index; let empresa of empresas | paginate: { itemsPerPage: 10, currentPage: p }">
+                <td>{{empresa.nmEmpresa}}</td>
+                <td>{{empresa.nmSigla}}</td>
+                <td>{{empresa.tipoEmpresa}}</td>
+                <td>{{empresa.flAtivo == true ? 'Ativa' : 'Inativa'}}</td>
+                <td>
+                  <div class="d-flex flex-row-reverse">
+                    <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editar(empresa)"></button>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex">
+                    <label class="switch switch-lg m-0">
+                      <input type="checkbox" [checked]="empresa.flAtivo" (click)="inativar(empresa, i, $event)"/>
+                      <span></span>
+                    </label>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="empresas.length==0">
+            <div class="alert alert-light" role="alert">
+              Nenhum registro encontrado.
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="empresas.length>0">
+          <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,13 @@
+<div *ngIf="!user" id="okta-login-container"></div>
+
+<div *ngIf="user">
+  <div class="panel-heading" style="background-color: #1797be; color: white;">Sistema GOVC!</div>
+  <div class="card card-default">
+    <div class="card-body">
+      <p>Bem Vindo ao sistema GOVC {{user}}</p>
+    </div>
+  </div>
+  <button type="button" class="btn btn-danger icon-lock" (click)="logout()">Logout</button>
+</div>
+
+

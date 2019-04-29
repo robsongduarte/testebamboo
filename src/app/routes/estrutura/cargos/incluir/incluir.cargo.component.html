@@ -1,0 +1,202 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Cargo
+  </div>
+  <div>
+    <!--<app-button-historico label="Auditoria" [link]="getLinkHistorico()" [desabilitar]="desabilitarHistorico()"></app-button-historico>-->
+  </div>
+</div>
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-table"></i>
+        &nbsp;
+        Cargos
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formIncluirCargo" class="form-horizontal" method="get" action="/">
+        <fieldset>  
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                       size = "default"
+                       color = "#00f2f2"
+                       type = "ball-clip-rotate">
+          </ngx-spinner>
+          <!--Cargo e Situacao-->
+          <div class="row">
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Cargo*</label>
+              <ngx-select [allowClear]="false"
+                            [items]="cargosDisponiveis"
+                            [disabled]="habilitarCargo"
+                            [(ngModel)]="ngxCargo"
+                            optionValueField="cdDominio" optionTextField="nome"
+                            [ngModelOptions]="{standalone: true}"
+                            placeholder="Digite o cargo"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="tipoCargo" name="tipoCargo" [(ngModel)]="ngxCargo">
+            </div>
+            <div class="form-group col-md-6">
+              <label class="col-form-label text-left">Situação*</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsSituacao"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacao"
+                            optionValueField="id" optionTextField="situacao"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="flAtivo" name="flAtivo" [(ngModel)]="ngxSituacao">
+            </div>
+          </div>          
+        </fieldset>
+      </form>
+      <!--Botão adicionar Quadro-->
+      <div class="row">
+        <div class="form-group col-md-12 text-right">
+          <label class="btn btn-info" (click)="adicionarQuadro()" data-toggle="modal" data-target="#addQuadroModal">
+            <i class="fa fa-plus-square"></i>
+            Adicionar Quadro
+          </label>
+        </div>
+      </div>
+      <!--Tabela de Quadro Assinatura-->
+      <div class="card mb-0 border-dark radius-top-only">
+        <div class="card-header bg-dark text-white radius-top-only">
+          <h5 class="mb-0 pb-1 pt-1">
+            <i class="fa fa-table"></i>
+            &nbsp;
+            Quadro Assinaturas
+          </h5>
+        </div>
+      </div>
+      <div class="card rounded-0 border-grey">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th *ngFor="let head of headElements; let i = index" scope="col">
+                  {{head}}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i = index; let quadroAssinatura of quadrosAssinaturas | paginate: { itemsPerPage: 10, currentPage: p }">
+                <td>{{quadroAssinatura.tipoQuadro.nome}}</td>
+                <td>{{quadroAssinatura.tipoAssinatura.nome}}</td>
+                <td>{{quadroAssinatura.valorAssinatura | currency:'BRL':true:'1.2-2'}}</td>
+                <td>
+                  <div class="d-flex flex-row-reverse">
+                    <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" data-toggle="modal" data-target="#addQuadroModal" (click)="editarQuadro(quadroAssinatura, i)"></button>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex">
+                      <button style="margin: 0 5px;" type="button" class="btn btn-danger icon-trash" (click)="excluirQuadro(quadroAssinatura)"></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="quadrosAssinaturas.length==0">
+            <div class="alert alert-light" role="alert">
+              Nenhum registro encontrado.
+            </div>
+          </div>
+        </div>
+        <div class="mx-auto w-50 text-center" *ngIf="quadrosAssinaturas.length>0">
+          <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+    <!--Botões-->
+    <div class="card-footer text-muted">
+      <div class="panel-footer text-right">
+        <button type="button" class="btn btn-outline-primary mr-1" (click)="voltar()">
+          Voltar
+        </button>
+        <button type="button" class="btn btn-success mr-1" [disabled]="formIncluirCargo.invalid" (click)="salvar()">
+          Salvar
+        </button>
+      </div>
+      <div class="panel-footer text-right">
+        <span class="text-danger" *ngIf="formIncluirCargo.invalid">*Preencher todos os campos obrigatórios.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Quadro -->
+<div class="modal fade bd-quadro-modal-lg" id="addQuadroModal" tabindex="-1" role="dialog" aria-labelledby="addQuadroModalLabel" aria-hidden="true">
+  <form [formGroup]="formIncluirQuadro" class="form-horizontal" method="get" action="/">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white pt-3 pb-3">
+          <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+            <i class="fa fa-table"></i> Incluir Quadro
+          </h5>
+          <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <!--Quadro e Assinatura-->
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label class="col-form-label text-left">Quadro*</label>
+                <ngx-select [allowClear]="false"
+                              [items]="dominiosQuadro"
+                              [disabled]="habilitarQuadro"
+                              [(ngModel)]="ngxQuadro"
+                              optionValueField="cdDominio" optionTextField="nome"
+                              (select)="carregarAssinatura()"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Digite o quadro a pesquisar."
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input class="form-control" type="hidden" formControlName="tipoQuadro" [(ngModel)]="ngxQuadro"/>
+              </div>
+              <div class="form-group col-md-6">
+                <label class="col-form-label text-left">Assinatura*</label>
+                <ngx-select [allowClear]="false"
+                              [items]="dominiosAssinatura"
+                              [disabled]="habilitarAssinatura"
+                              [(ngModel)]="ngxAssinatura"
+                              optionValueField="cdDominio" optionTextField="nome"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Digite a assinatura a pesquisar."
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input type="hidden" formControlName="tipoAssinatura" name="tipoAssinatura" [(ngModel)]="ngxAssinatura"/>
+              </div>
+            </div>
+            <!--Valor-->
+            <div class="row">
+              <div class="form-group col-md-6">
+                <label class="col-form-label text-left">Valor*</label>
+                <div class="input-group-append">
+                  <input type="text" class="form-control" currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" formControlName="valorAssinatura"/>
+                </div>
+              </div>              
+            </div>
+          </fieldset>
+        </div>
+        <!--Botões-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal" (click)="salvarQuadro()" [disabled]="formIncluirQuadro.invalid">Salvar</button>
+        </div>
+        <div class="panel-footer text-right">
+          <span class="text-danger" *ngIf="formIncluirQuadro.invalid">*Preencher todos os campos obrigatórios.</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

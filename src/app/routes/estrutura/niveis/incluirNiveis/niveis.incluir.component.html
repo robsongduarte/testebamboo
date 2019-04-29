@@ -1,0 +1,312 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Níveis
+  </div>
+  <div>
+    <app-button-historico label="Auditoria" [link]="getLinkHistorico()" [desabilitar]="desabilitarHistorico()"></app-button-historico>
+  </div>
+</div>
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-table"></i>
+        &nbsp;
+        Níveis
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formNivelIncluir" class="form-horizontal" method="get" action="/">
+        <fieldset>  
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                       size = "default"
+                       color = "#00f2f2"
+                       type = "ball-clip-rotate">
+          </ngx-spinner>
+          <!--Tabs-->
+          <ngx-tabset>
+            <ngx-tab tabTitle="Nível"> 
+            <!--Empresa-->
+            <div class="row" *ngIf="!edicao">
+              <div class="col">
+                <label class="col-form-label text-left">Empresa*</label>
+                  <ngx-select [allowClear]="true"
+                              [(items)]="empresas"
+                              [disabled]="false"
+                              [(ngModel)]="ngxValueEmpresa"
+                              [ngModelOptions]="{standalone: true}"
+                              optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                              (select)="carregarTipoNivel()"
+                              (remove)="removerEmpresa()"
+                              (keyup)="onKeyUp($event)"
+                              placeholder="Digite o nome da empresa"
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <ng-template ngx-select-option-not-found>
+                    Empresa não encontrada!
+                  </ng-template>
+                  <input type="hidden" formControlName="cdEmpresa" name="cdEmpresa" [(ngModel)]="ngxValueEmpresa">
+                  <span
+                    class="text-danger"
+                    *ngIf="ngxValueEmpresa == 0">
+                    Selecione uma empresa.
+                  </span>
+              </div>              
+            </div>
+              <!--Estrutura-->
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <label class="col-form-label text-left">Estrutura*</label>
+                  <div class="input-group-append">
+                    <input class="form-control" type="text" class="form-control-plaintext" formControlName="dsEstrutura" readonly/>
+                    <button class="btn btn-info" type="button" data-toggle="modal" data-target="#nivelEstruturaModal" *ngIf="!edicao" [disabled]="edicao || ngxValueEmpresa == 0" (click)="editarNivelEstrutura()">
+                      <i class="fa fa-plus"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!--Tipo de Nível-->
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <label class="col-form-label text-left">Tipo de Nível*</label>
+                  <ngx-select [allowClear]="true"
+                              [items]="tipoNiveis"
+                              [disabled]="habilitarTipoNivel"
+                              [(ngModel)]="ngxTipoNivel"
+                              optionValueField="cdTipoNivel" optionTextField="nmTipoDeNivel"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Digite o tipo de nível."
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input type="hidden" formControlName="tipoNivel" name="tipoNivel" [(ngModel)]="ngxTipoNivel">
+                </div>
+              </div>
+              <!--Sigla-->
+              <div class="form-group row">
+                <div class="col-md-4">
+                  <label class="col-form-label text-left">Sigla*</label>
+                  <input class="form-control" type="text" maxlength="4" formControlName="nmAbreviatura" placeholder="ABC, XYZ"/>
+                </div>
+              </div>
+              <!--Nome-->
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <label class="col-form-label text-left">Nome*</label>
+                  <input class="form-control" type="text" maxlength="255" formControlName="nmNivel" placeholder="Nome do nivel."/>
+                </div>
+              </div>
+              <!--Vigência Inicial e Final-->
+              <div class="row"> 
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">Vigência Inicial*</label>
+                  <input class="form-control" type="date" (change)="carregarDataInicioVigencia()" formControlName="dtVigenciaInicio" [formControl]="formNivelIncluir.controls['dtVigenciaInicio']"/>
+                  <span
+                    class="text-danger"
+                    *ngIf="formNivelIncluir.controls['dtVigenciaInicio'].invalid && (formNivelIncluir.controls['dtVigenciaInicio'].dirty || formNivelIncluir.controls['dtVigenciaInicio'].touched) && !formNivelIncluir.controls['dtVigenciaInicio'].hasError('dataInvalida')">
+                    Digite uma data válida.
+                  </span>
+                  <span
+                    class="text-danger"
+                    *ngIf="formNivelIncluir.controls['dtVigenciaInicio'].hasError('dataInvalida') && (formNivelIncluir.controls['dtVigenciaInicio'].dirty || formNivelIncluir.controls['dtVigenciaInicio'].touched)">
+                    Data deve ser maior ou igual a 01/01/2000.
+                  </span>
+                </div>
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">até</label>
+                  <input class="form-control" type="date" [min]="dataMinima" formControlName="dtVigenciaFim" [formControl]="formNivelIncluir.controls['dtVigenciaFim']"/>
+                  <span
+                    class="text-danger"
+                    *ngIf="formNivelIncluir.controls['dtVigenciaFim'].hasError('dateValidator') && (formNivelIncluir.controls['dtVigenciaFim'].dirty || formNivelIncluir.controls['dtVigenciaFim'].touched)">
+                    Digite uma data válida.
+                  </span>
+                  <span
+                    class="text-danger"
+                    *ngIf="formNivelIncluir.hasError('dataInicioMaior') && !formNivelIncluir.controls['dtVigenciaFim'].hasError('dataInvalida')">
+                    Data fim menor que a data de início.
+                  </span>
+                  <span
+                    class="text-danger"
+                    *ngIf="formNivelIncluir.controls['dtVigenciaFim'].hasError('dataInvalida') && (formNivelIncluir.controls['dtVigenciaFim'].dirty || formNivelIncluir.controls['dtVigenciaFim'].touched)">
+                    Data deve ser maior ou igual a 01/01/2000.
+                  </span>
+                </div>
+              </div>
+              <!--Centro de Custo-->
+              <div class="form-group row">
+                <div class="col-md-4">
+                  <label class="col-form-label text-left">Centro de Custo</label>
+                  <input class="form-control" type="text" formControlName="nrCentroDeCusto" placeholder="Número centro de custo." mask="000000000"/>
+                </div>
+              </div>
+              <!--Localidade-->
+              <div class="form-group row">
+                <div class="col-md-6">
+                  <label class="col-form-label text-left">Localidade*</label>
+                  <ngx-select [allowClear]="true"
+                              [items]="localidades"
+                              [disabled]="habilitarLocalidade"
+                              [(ngModel)]="ngxLocalidade"
+                              optionValueField="cdLocalidade" optionTextField="dsLocalidade"
+                              (select)="carregarEnderecoLocalidade()"
+                              (remove)="removerEnderecoLocalidade()"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Selecione"
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input type="hidden" formControlName="localidade" name="localidade" [(ngModel)]="ngxLocalidade">
+                </div>
+              </div>
+              <!--Endereço-->
+              <div class="form-group row">
+                <div class="col-md-12">
+                  <label class="col-form-label text-left">Endereço</label>
+                  <textarea class="form-control" formControlName="enderecoLocalidade" maxlength="4000" rows="3" readonly></textarea>
+                </div>
+              </div>
+            </ngx-tab>
+            <ngx-tab tabTitle="Permissões" [disabled]="habilitarTabs">
+              <div class="row mb-1">
+                <div class="col-9">
+                  <div class="form-group input-group">
+                    <div class="input-group-text"><i class="fa fa-search"></i></div>
+                    <input formControlName="pesquisaDesignado" [(ngModel)]="designadoFilter.nmDesignado" placeholder="Pesquisa por designado." type="text" class="form-control">
+                  </div>
+                </div>
+              </div>
+
+              <!--Tabela de designados-->
+              <div class="card border-dark radius-top-only mb-0">
+                <div class="card-header bg-dark text-white radius-top-only">
+                  <h5 class="mb-0 pb-1 pt-1">
+                    <i class="fas fa-search"></i>
+                    &nbsp;
+                    Buscar Designado
+                  </h5>
+                </div>
+              </div>
+
+              <div class="card rounded-0 border-grey">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                        <tr>
+                          <th *ngFor="let head of headDesignado; let i = index" scope="col">
+                            {{head}}
+                          </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let i = index; let designado of designados | filterBy: designadoFilter | paginate: { itemsPerPage: 10, currentPage: p }">
+                          <td>{{designado.nmDesignado}}</td>
+                          <td>{{designado.dsTitulo}}</td>
+                          <td>{{designado.nome}}</td>
+                          <td>{{designado.dtVigenciaInicio | date:'dd/MM/yyyy'}}</td>
+                          <td>{{designado.dtVigenciaFim | date:'dd/MM/yyyy'}}</td>
+                          <td>
+                            <div class="d-flex flex-row-reverse">
+                              <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editarDesignado(designado.cdDesignacao)"></button>
+                            </div>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div *ngIf="designados.length == 0 || (designados | filterBy: designadoFilter).length == 0">
+                  <div class="alert alert-light" role="alert">
+                    Nenhum registro encontrado.
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-50 text-center" *ngIf="designados.length>0">
+                <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+              </div>
+
+            </ngx-tab>
+            <ngx-tab tabTitle="Anexos" [disabled]="habilitarTabs">
+              <app-anexos-nivel [cdNivel]="nivel?.cdNivel" *ngIf="nivel != undefined && nivel != null"></app-anexos-nivel>
+            </ngx-tab>
+          </ngx-tabset>                    
+        </fieldset>    
+        <!--Botões-->
+        <fieldset>
+          <div class="panel-footer text-right">               
+            <button style="margin: 0 5px;" type="button" class="btn btn-outline-primary" *ngIf="!organograma" onClick="history.go(-1)">Voltar</button>
+            <button style="margin: 0 5px;" type="button" class="btn btn-primary" *ngIf="organograma" (click)="voltarOrganograma()">Voltar Organograma</button>
+            <button style="margin: 0 5px;" type="button" class="btn btn-success" [disabled]="formNivelIncluir.invalid" (click)="salvar()">Salvar</button>
+          </div>
+          <div class="panel-footer text-right"> 
+            <span class="text-danger" *ngIf="formNivelIncluir.invalid">*Preencher todos os campos obrigatórios.</span>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</section>
+
+ <!-- Modal -->
+ <div class="modal fade bd-nivel-modal-lg" id="nivelEstruturaModal" tabindex="-1" role="dialog" aria-labelledby="nivelEstruturaModalLabel" aria-hidden="true">
+    <form [formGroup]="formNivelEstrutura" class="form-horizontal" method="get" action="/">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-dark text-white pt-3 pb-3">
+            <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+              <i class="fa fa-table"></i> Estrutura Níveis
+            </h5>
+            <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card-body">
+              <div class="row">
+                <div class="form-check mb-1 mr-sm-2">
+                  <div class="checkbox c-checkbox">
+                    <label>
+                      <input type="checkbox" (click)="selecionarTodos()"/>
+                      <span class="fa fa-check"></span>Selecionar Todos
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <input class="form-control" formControlName="estrutura" #filter (keyup)="filterNodes(filter.value, tree)" placeholder="Digite um nível para pesquisa." />
+              <div class="row">                
+                <div class="form-group col-md-4">
+                  <tree-root #tree [nodes]="nodes" [focused]="false" [options]="customTemplateStringOptions">
+                    <ng-template #treeNodeTemplate let-node>
+                        <span (click)="descricaoNivel(node)" title="{{node.data.subTitle}}">{{ node.data.name }}</span>
+                        <span class="float-right" (click)="descricaoNivel(node)"></span>
+                    </ng-template>
+                  </tree-root>
+                </div>
+                <div *ngIf="mostrarDescricaoNivel" class="form-group col-md-8">
+                  <div class="">
+                    <label class="col-form-label text-left">Nome*</label>
+                    <input class="form-control" type="text" formControlName="nome" readonly/>
+                  </div>
+                  <div class="row">
+                    <div class="form-group col-md-6">
+                      <label class="col-form-label text-left">Vigência Inicial</label>
+                      <input class="form-control" type="date" formControlName="inicioVigencia" readonly/>
+                    </div> 
+                    <div class="form-group col-md-6">
+                      <label class="col-form-label text-left">Vigência Final</label>
+                      <input class="form-control" type="date" formControlName="fimVigencia" readonly/>
+                    </div>                                     
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Fechar</button>
+              <button type="button" class="btn btn-success" data-dismiss="modal" [disabled]="formNivelEstrutura.invalid" (click)="salvarNivelEstrutura()">Salvar alterações</button>
+            </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  

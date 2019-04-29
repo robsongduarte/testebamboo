@@ -1,0 +1,381 @@
+<div class="content-heading d-flex">
+  <div class="mr-auto">
+    Empresa
+  </div>
+  <div>
+    <app-button-historico label="Auditoria" [link]="getLinkHistorico()" [desabilitar]="desabilitarHistorico()"></app-button-historico>
+  </div>
+</div>
+
+<!-- START card-->
+<section>
+  <div class="card border-dark radius-top-only mb-0">
+    <div class="card-header bg-dark text-white radius-top-only">
+      <h5 class="mb-0 pb-1 pt-1">
+        <i class="fas fa-table"></i>
+        &nbsp;
+        Empresa
+      </h5>
+    </div>
+  </div>
+  <div class="card rounded-0 border-grey">
+    <div class="card-body">
+      <form [formGroup]="formEmpresaIncluir" class="form-horizontal" method="get" action="/">
+        <fieldset>
+          <!--Spinner-->
+          <ngx-spinner bdColor = "rgba(245,238,238,0.8)"
+                       size = "default"
+                       color = "#00f2f2"
+                       type = "ball-clip-rotate">
+          </ngx-spinner>
+          <!--Tabs-->
+          <ngx-tabset>
+            <ngx-tab tabTitle="Dados da empresa">
+              <!--Código, Empresa e Sigla-->
+              <div class="row">
+                <div class="form-group col-md-3">
+                  <label class="col-form-label text-left">Código</label>
+                  <input class="form-control" type="text" formControlName="cdEmpresa" readonly/>
+                </div>
+                <div class="form-group col-md-6">
+                  <label class="col-form-label text-left">Nome*</label>
+                  <input class="form-control" type="text" maxlength="100" formControlName="nmEmpresa" autofocus="autofocus" placeholder="Digite um nome"/>
+                </div>
+                <div class="form-group col-md-3">
+                  <label class="col-form-label text-left">Sigla*</label>
+                  <input class="form-control" type="text" maxlength="4" formControlName="nmSigla" [formControl]="formEmpresaIncluir.controls['nmSigla']" placeholder="ABC, XYZ"/>
+                  <span class="text-danger" *ngIf="formEmpresaIncluir.controls['nmSigla'].hasError('maxLength')">Tamanho deve estar entre 1 e 4.</span>
+                </div>
+              </div>
+              <!--Denominação Social e Situação-->
+              <div class="row">
+                <div class="form-group col-md-8">
+                  <label class="col-form-label text-left">Denominação Social*</label>
+                  <input class="form-control" type="text" maxlength="255" formControlName="nmDenominacaoSocial" [formControl]="formEmpresaIncluir.controls['nmDenominacaoSocial']" placeholder="Razão social"/>
+                </div>
+                <div class="form-group col-md-4">
+                  <label class="col-form-label text-left">Situação</label>
+                  <ngx-select [allowClear]="false"
+                              [items]="itemsSituacao"
+                              [disabled]="false"
+                              [(ngModel)]="ngxSituacao"
+                              optionValueField="id" optionTextField="situacao"
+                              [ngModelOptions]="{standalone: true}"
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input type="hidden" formControlName="flAtivo" name="flAtivo" [(ngModel)]="ngxSituacao">
+                </div>
+              </div>
+              <!--Tipo Empresa-->
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="col-form-label text-left">Tipo de Empresa</label>
+                    <ngx-select [allowClear]="false"
+                                [items]="itemsTipoEmpresa"
+                                [disabled]="false"
+                                [(ngModel)]="ngxTipoEmpresa"
+                                optionValueField="id" optionTextField="tipo"
+                                (select)="carregarEmpresaControladora()"
+                                [ngModelOptions]="{standalone: true}"
+                                noResultsFound="Nenhum resultado encontrado.">
+                    </ngx-select>
+                    <input type="hidden" formControlName="tipoEmpresa" name="tipoEmpresa" [(ngModel)]="ngxTipoEmpresa">
+                </div>
+              </div>
+              <!--Empresa Controladora e Participação Capital-->
+              <div class="form-group row">
+                <div class="col-md-8">
+                  <label class="col-form-label text-left">Empresa Controladora</label>
+                  <ngx-select [allowClear]="true"
+                              [items]="empresas"
+                              [disabled]="habilitarEmpresaControladora"
+                              [(ngModel)]="ngxEmpresaControladora"
+                              optionValueField="cdEmpresa" optionTextField="nmEmpresa"
+                              [ngModelOptions]="{standalone: true}"
+                              placeholder="Selecione"
+                              noResultsFound="Nenhum resultado encontrado.">
+                  </ngx-select>
+                  <input type="hidden" formControlName="empresaControladora" name="empresaControladora" [(ngModel)]="ngxEmpresaControladora">
+                </div>
+                <div class="col-md-4">
+                  <label class="col-form-label text-left">Participação Capital</label>
+                  <div class="input-group-append">
+                      <input type="text" class="form-control" currencyMask formControlName="nrParticipacaoCapital" [formControl]="formEmpresaIncluir.controls['nrParticipacaoCapital']" [options]="{ prefix: '', decimal: ',', allowNegative: 'false' }"/>
+                    <span class="input-group-text">%</span>
+                  </div>
+                  <span class="text-danger" *ngIf="formEmpresaIncluir.controls['nrParticipacaoCapital'].hasError('range') && !formEmpresaIncluir.controls['nrParticipacaoCapital'].hasError('pattern')">Permitido somente entre 0 à 100.</span>
+                </div>
+              </div>
+              <!--Tipo de Norma-->
+              <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="col-form-label text-left">Tipo de Norma</label>
+                    <ngx-select [allowClear]="true"
+                                [items]="cargos"
+                                [disabled]="false"
+                                [(ngModel)]="ngxCargo"
+                                optionValueField="cdCargo" optionTextField="nmCargo"
+                                [ngModelOptions]="{standalone: true}"
+                                placeholder="Selecione"
+                                noResultsFound="Nenhum resultado encontrado.">
+                    </ngx-select>
+                    <input type="hidden" formControlName="tipoNorma" name="tipoNorma" [(ngModel)]="ngxCargo">
+                </div>
+              </div>
+            </ngx-tab>
+            <ngx-tab tabTitle="Sede e filiais" [disabled]="habilitarTabs">
+              <div class="row mb-1">
+                <div class="col-9">
+                  <div class="form-group input-group">
+                    <div class="input-group-text"><i class="fa fa-search"></i></div>
+                    <input formControlName="pesquisaLocalidade" [(ngModel)]="localidadeFilter.dsLocalidade" placeholder="Pesquisa por localidades." type="text" class="form-control">
+                  </div>
+                </div>
+                <div class="col-3 text-right">
+                  <button type="button" class="btn btn-info" (click)="incluirLocalidade()" data-toggle="modal" data-target="#addLocalidadeModal">
+                    <i class="fa fa-plus-square"></i>
+                    Incluir
+                  </button>
+                </div>
+              </div>
+
+              <!--Tabela de localidades-->
+              <div class="card border-dark radius-top-only mb-0">
+                <div class="card-header bg-dark text-white radius-top-only">
+                  <h5 class="mb-0 pb-1 pt-1">
+                    <i class="fas fa-search"></i>
+                    &nbsp;
+                    Buscar Localidade
+                  </h5>
+                </div>
+              </div>
+
+              <div class="card rounded-0 border-grey">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                        <tr>
+                          <th *ngFor="let head of headLocalidade; let i = index" scope="col">
+                            {{head}}
+                          </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let i = index; let localidade of localidades | filterBy: localidadeFilter | paginate: { itemsPerPage: 10, currentPage: p }">
+                          <td>{{localidade.dsLocalidade}}</td>
+                          <td>{{localidade.nmEnderecoRodape}}</td>
+                          <td>{{localidade.situacaoLocalidade ? "ATIVO" : "INATIVO"}}</td>
+                          <td>
+                            <div class="d-flex flex-row-reverse">
+                              <button style="margin: 0 0px;" type="button" class="btn btn-info fa fa-edit" (click)="editarLocalidade(localidade, i)" data-toggle="modal" data-target="#addLocalidadeModal"></button>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="d-flex">
+                              <label class="switch switch-lg m-0">
+                                <input type="checkbox"
+                                [checked]="localidade.situacaoLocalidade"
+                                (change)="inativar(localidade, i, $event)"/>
+                                <span></span>
+                              </label>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="d-flex">
+                                <button style="margin: 0 5px;" type="button" class="btn btn-danger icon-trash" *ngIf="localidade.cdLocalidade == null" (click)="excluirLocalidade(localidade)"></button>
+                            </div>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div *ngIf="localidades.length == 0 || (localidades | filterBy: localidadeFilter).length == 0">
+                  <div class="alert alert-light" role="alert">
+                    Nenhum registro encontrado.
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-50 text-center" *ngIf="localidades.length>0">
+                <pagination-controls previousLabel="Anterior" nextLabel="Próximo" (pageChange)="p = $event"></pagination-controls>
+              </div>
+            </ngx-tab>
+            <ngx-tab tabTitle="Anexos" [disabled]="habilitarTabs">
+              <app-anexos [cdEmpresa]="empresa?.cdEmpresa" *ngIf="empresa != undefined && empresa != null"></app-anexos>
+            </ngx-tab>
+          </ngx-tabset>
+          <!--Botões-->
+          <div class="panel-footer text-right">
+              <button style="margin: 0 5px;" type="button" class="btn btn-light" *ngIf="!organograma" onClick="history.go(-1)">Voltar</button>
+              <button style="margin: 0 5px;" type="button" class="btn btn-primary" *ngIf="organograma" (click)="voltarOrganograma()">Voltar Organograma</button>
+              <button style="margin: 0 5px;" type="button" class="btn btn-success" [disabled]="formEmpresaIncluir.invalid" (click)="salvar()">Salvar</button>
+          </div>
+          <div class="panel-footer text-right">
+            <span class="text-danger" *ngIf="formEmpresaIncluir.invalid">*Preencher todos os campos obrigatórios.</span>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Modal Localidade -->
+<div class="modal fade bd-localidade-modal-lg" id="addLocalidadeModal" tabindex="-1" role="dialog" aria-labelledby="addLocalidadeModalLabel" aria-hidden="true">
+  <form [formGroup]="formIncluirLocalidade" class="form-horizontal" method="get" action="/">
+    <!--Spinner-->
+    <ngx-spinner
+    bdColor = "rgba(245,238,238,0.8)"
+    size = "default"
+    color = "#00f2f2"
+    type = "ball-clip-rotate"
+    >
+    </ngx-spinner>
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white pt-3 pb-3">
+          <h5 class="modal-title" id="modal-basic-title" class="mb-0">
+            <i class="fa fa-table"></i> Incluir Localidade
+          </h5>
+          <button type="button" class="close text-white pt-2 pb-2" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <!--Sede, Nome da localidade e Situação-->
+            <div class="row">
+              <div class="col-md-2">
+                <br><br>
+                <div class="form-check mb-1 mr-sm-1">
+                  <div class="checkbox c-checkbox">
+                    <label>
+                      <input type="checkbox" formControlName="flSede"/>
+                      <span class="fa fa-check"></span>Sede
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group col-md-6">
+                <label class="col-form-label text-left">Nome da localidade*</label>
+                <input class="form-control" type="text" maxlength="100" formControlName="dsLocalidade" placeholder="Digite um nome."/>
+              </div>
+              <div class="form-group col-md-4">
+                <label class="col-form-label text-left">Situação*</label>
+                <ngx-select [allowClear]="false"
+                            [items]="itemsSituacao"
+                            [disabled]="false"
+                            [(ngModel)]="ngxSituacaoLocalidade"
+                            optionValueField="id" optionTextField="situacao"
+                            [ngModelOptions]="{standalone: true}"
+                            noResultsFound="Nenhum resultado encontrado.">
+                </ngx-select>
+                <input type="hidden" formControlName="situacaoLocalidade" name="situacaoLocalidade" [(ngModel)]="ngxSituacaoLocalidade">
+              </div>
+            </div>
+            <!--Cep, Logradouro e Número-->
+            <div class="row">
+              <div class="col-md-4">
+                <label class="col-form-label text-left">CEP*</label>
+                <div class="input-group-append">
+                  <input class="form-control" type="text" formControlName="vlCep" mask="00000-000" [formControl]="formIncluirLocalidade.controls['vlCep']"/>
+                  <button class="btn btn-info" type="button" [disabled]="formIncluirLocalidade.controls['vlCep'].hasError('minlength') || formIncluirLocalidade.controls['vlCep'].hasError('required')" (click)="buscarCep()">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+                <span class="text-danger" *ngIf="formIncluirLocalidade.controls['vlCep'].hasError('minlength')">Cep inválido.</span>
+              </div>
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Logradouro</label>
+                <input class="form-control" type="text" formControlName="nmLogradouro" maxlength="250"/>
+              </div>
+              <div class="col-md-2">
+                <label class="col-form-label text-left">Número*</label>
+                <input class="form-control" type="text" formControlName="nrLogradouro" maxlength="8"/>
+              </div>
+            </div>
+            <!--Complemento e Bairro/Distrito-->
+            <div class="row">
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Complemento</label>
+                <input class="form-control" type="text" formControlName="nmComplemento" placeholder="ex: bloco B, casa 4..." maxlength="50"/>
+              </div>
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Bairro/Distrito</label>
+                <input class="form-control" type="text" formControlName="nmBairro" maxlength="100"/>
+              </div>
+            </div>
+            <!--Município e UF-->
+            <div class="row">
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Município</label>
+                <input class="form-control" type="text" formControlName="nmMunicipio" maxlength="100"/>
+              </div>
+              <div class="col-md-3">
+                <label class="col-form-label text-left">UF</label>
+                <input class="form-control" maxlength="2" type="text" formControlName="nmUf" [formControl]="formIncluirLocalidade.controls['nmUf']"/>
+                <span class="text-danger" *ngIf="formIncluirLocalidade.controls['nmUf'].hasError('pattern')">Permitido somente texto.</span>
+                <span class="text-danger" *ngIf="formIncluirLocalidade.controls['nmUf'].hasError('minlength')">Informar dois caracteres.</span>
+              </div>
+            </div>
+            <!--Caixa Postal e Telefone-->
+            <div class="row">
+              <div class="col-md-4">
+                <label class="col-form-label text-left">Caixa Postal</label>
+                <input class="form-control" type="text" formControlName="nrCaixaPostal" placeholder="Informe caixa postal'." mask="0000000000"/>
+              </div>
+              <div class="col-md-4">
+                <label class="col-form-label text-left">Telefone</label>
+                <input class="form-control" type="text" formControlName="nrTelefone" placeholder="Informe o telefone." mask="(00) 0000-0000"/>
+              </div>
+            </div>
+            <!--Endereço p/ rodapés dos documentos-->
+            <div class="row">
+              <div class="col-md-12">
+                <label class="col-form-label text-left">Endereço para rodapés dos documentos*</label>
+                <input class="form-control" type="text" formControlName="nmEnderecoRodape" placeholder="Digite como exibir o endereço em documentos." maxlength="500"/>
+              </div>
+            </div>
+            <!--CNPJ, Inscrição Estadual e Inscrição Municipal-->
+            <div class="row">
+              <div class="col-md-4">
+                <label class="col-form-label text-left">CNPJ</label>
+                <input class="form-control" type="text" formControlName="CNPJ" placeholder="Informe o CNPJ." mask="00.000.000/0000-00"/>
+              </div>
+              <div class="col-md-4">
+                <label class="col-form-label text-left">Inscrição Estadual</label>
+                <input class="form-control" type="text" formControlName="nrInscEstadual" placeholder="Número da inscrição." maxlength="25"/>
+              </div>
+              <div class="col-md-4">
+                <label class="col-form-label text-left">Inscrição Municipal</label>
+                <input class="form-control" type="text" formControlName="nrInscMunicipal" placeholder="Número da inscrição." maxlength="25"/>
+              </div>
+            </div>
+            <!--Número NIRE e Data registro NIRE-->
+            <div class="row">
+              <div class="col-md-4">
+                <label class="col-form-label text-left">Número NIRE</label>
+                <input class="form-control" type="text" formControlName="nrNIRE" placeholder="Informe o NIRE." maxlength="25"/>
+              </div>
+              <div class="col-md-6">
+                <label class="col-form-label text-left">Data registro NIRE</label>
+                <input class="form-control" type="date" formControlName="dtRegistroNire" [formControl]="formIncluirLocalidade.controls['dtRegistroNire']"/>
+               <span
+                  class="text-danger"
+                  *ngIf="formIncluirLocalidade.controls['dtRegistroNire'].invalid && (formIncluirLocalidade.controls['dtRegistroNire'].dirty || formIncluirLocalidade.controls['dtRegistroNire'].touched)">
+                  Digite uma data válida.
+                </span>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <!--Botões-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-success" data-dismiss="modal" (click)="salvarLocalidade()" [disabled]="formIncluirLocalidade.invalid">Salvar</button>
+        </div>
+        <div class="panel-footer text-right">
+          <span class="text-danger" *ngIf="formIncluirLocalidade.invalid">*Preencher todos os campos obrigatórios.</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

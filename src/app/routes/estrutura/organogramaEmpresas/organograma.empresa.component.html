@@ -1,0 +1,50 @@
+
+<div class="content-heading">
+  <div *ngIf="!habilitarOrgNivel">
+    <div>Organograma de Empresas</div>
+  </div>  
+  <div *ngIf="habilitarOrgNivel">
+    <div>Organograma de Niveis</div>
+  </div>  
+</div>
+<form [formGroup]="formOrganograma" class="form-horizontal" method="get" action="/">
+  <div class="container">
+    <div class="row">
+      <div class="col-2">
+        <div class="panel-footer text-left">
+          <legend>
+            <button style="margin: 0 5px;" type="button" class="btn btn-info" (click)="zoomOut()"><i class="fa fa-plus-square"></i></button>
+            <button style="margin: 0 5px;" type="button" class="btn btn-info" (click)="zoomMin()"><i class="fa fa-minus-square"></i></button>    
+          </legend>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="form-group input-group">
+          <input class="form-control"  type="text" autofocus="autofocus" formControlName="pesquisaOrganograma" placeholder="Digite para efetuar a busca!"/>                                  
+          <button class="btn btn-info" type="submit" (click)="pesquisaOrganograma()" [disabled]="formOrganograma.invalid">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="panel-footer text-right">
+          <legend>
+            <button style="margin: 0 5px;" type="button" class="btn btn-info" (click)="expandirOrganograma()">Expandir Todos</button>
+            <button style="margin: 0 5px;" type="button" class="btn btn-info" (click)="recolherOrganograma()">Recolher Todos</button>    
+          </legend>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="habilitarOrgNivel">
+    <div class="panel-footer text-right">
+      <legend>
+        <button style="margin: 0 5px;" type="button" class="btn btn-info" (click)="voltarOrganograma()">Voltar Org. Empresa</button>
+      </legend>
+    </div>
+  </div> 
+</form>
+
+<div id="chart-container" (click)="abrirOrganogramaNivel()"></div>
+

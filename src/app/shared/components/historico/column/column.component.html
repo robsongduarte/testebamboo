@@ -1,0 +1,48 @@
+<div
+  class="col-sm-2 text-right pr-1 column-historico"
+  [class.font-weight-bold]="column.children"
+  [class.text-truncate]="!column.children"
+  [@toggleColumn]="columnState"
+  [title]="column.title">
+  {{ column.title }}:
+  <ng-container *ngIf="column.children">
+    <i class="text-muted cursor-pointer fa"
+      (click)="toogleColumns()"
+      [class.fa-plus-circle]="!column.visible"
+      [class.fa-minus-circle]="column.visible">
+    </i>
+    &nbsp;
+  </ng-container>
+</div>
+<div class="col-sm-10 column-historico" [@toggleColumn]="columnState">
+  <ng-container *ngIf="!column.children">
+    <ng-container *ngIf="isHtml()">
+      <i class="fa fa-file" (click)="abrirModal(older())"></i>
+      <ng-container *ngIf="isNewer()">
+        &nbsp;&nbsp;
+        <strong><i class="fa fa-arrow-right"></i></strong>
+        &nbsp;&nbsp;
+        <i class="fa fa-file" (click)="abrirModal(newer())"></i>
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!isHtml()">
+      "{{ older() }}"
+      <ng-container *ngIf="isNewer()">
+        &nbsp;&nbsp;
+        <strong><i class="fa fa-arrow-right"></i></strong>
+        &nbsp;&nbsp;
+        "{{ newer() }}"
+      </ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="column.children">
+    <ng-container *ngFor="let children of column.children">
+      <div class="row"
+        app-columns
+        [auditoria]="children[0]"
+        [config]="children[1]"
+        [isChildren]="true">
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

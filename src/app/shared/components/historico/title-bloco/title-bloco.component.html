@@ -1,0 +1,13 @@
+<div class="row pb-2">
+  <div class="col-sm-12 text-truncate text-capitalize">
+    <strong>{{ getDescricao() }}</strong>
+    &nbsp;-&nbsp;{{ getNome() }}&nbsp;
+    <i
+      class="text-muted cursor-pointer fa"
+      (click)="toogleDetalhe()"
+      title="Detalhe"
+      [class.fa-plus-circle]="!config.visible"
+      [class.fa-minus-circle]="config.visible">
+    </i>
+  </div>
+</div>

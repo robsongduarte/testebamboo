@@ -1,0 +1,31 @@
+<div class="row">
+  <div class="pt-2" [class.col-sm-9]="configurar" [class.col-sm-12]="!configurar">
+    <div class="row">
+      <div class="col-sm-12 text-right">
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toogleExibir()">
+            <i class="fa" [class.fa-plus]="!exibir" [class.fa-minus]="exibir"></i>
+          </button>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="toogleConfigurar()">
+            <i class="fa fa-cog"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div
+          *ngFor="let conf of configs"
+          app-bloco-historico
+          [auditoria]="conf[0]"
+          [config]="conf[1]">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-3 ml-0 pl-0 pr-0 bg-light configuracao" [@toggleConfig]="configState">
+    <app-config
+      [config]="configuracao"
+      (toogleColumn)="toogleColumnExibir($event)"
+      (toogleChildren)="toogleChildrenExibir($event)">
+    </app-config>
+  </div>
+</div>

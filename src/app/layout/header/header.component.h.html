@@ -1,0 +1,52 @@
+<!-- START Top Navbar-->
+<nav class="navbar topnavbar navbar-expand-lg navbar-light" role="navigation">
+    <!-- START navbar header-->
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#/">
+            <div class="brand-logo">
+                <img class="img-fluid" src="assets/img/logo.png" alt="App Logo" />
+            </div>
+            <div class="brand-logo-collapsed">
+                <img class="img-fluid" src="assets/img/logo-single.png" alt="App Logo" />
+            </div>
+        </a>
+       <button class="navbar-toggler" type="button" (click)="navCollapsed = !navCollapsed">
+          <span class="navbar-toggler-icon"></span>
+       </button>
+    </div>
+    <!-- END navbar header-->
+    <!-- START Nav wrapper-->
+    <div class="navbar-collapse collapse" [collapse]="navCollapsed">
+        <!-- Navbar Menu -->
+        <ul class="nav navbar-nav mr-auto flex-column flex-lg-row">
+            <li class="nav-item" *ngFor="let item of menuItems" [ngClass]="{'dropdown': item.submenu}" dropdown>
+                <a class="nav-link" *ngIf="!item.heading && !item.submenu" [routerLink]="item.link" [title]="item.text">
+                    <span>{{(item.translate | translate) || item.text}}</span>
+                </a>
+                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" dropdownToggle *ngIf="item.submenu">
+                    <span>{{(item.translate | translate) || item.text}}</span>
+                </a>
+                <!-- START Dropdown menu-->
+                <div *dropdownMenu class="dropdown-menu animated fadeInUp">
+                    <a class="dropdown-item" *ngFor="let subitem of item.submenu" [routerLink]="subitem.link" [title]="subitem.text" >
+                        <span>{{(subitem.translate | translate) || subitem.text}}</span>
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <!-- End Navbar Menu-->
+        <!-- START Right Navbar-->
+        <ul class="navbar-nav flex-row">
+            <!-- START lock screen-->
+            <li class="nav-item">
+                <a class="nav-link" title="Lock screen" [routerLink]="'/lock'">
+                    <em class="icon-lock"></em>
+                </a>
+            </li>
+            <!-- END lock screen-->
+
+        </ul>
+        <!-- END Right Navbar-->
+    </div>
+</nav>
+<!-- END Top Navbar-->

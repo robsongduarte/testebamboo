@@ -1,0 +1,21 @@
+<h6 class="dropdown-header mt-2">
+  {{ config.table[1] }}
+</h6>
+<ng-container *ngFor="let column of columns">
+  <button
+    class="dropdown-item pl-3 pr-1"
+    (click)="toogleColumnExibir(column)"
+    type="button">
+    {{ column.label }}
+    <i class='fa fa-ban text-danger' *ngIf="!column.visible && column.visible != undefined"></i>
+  </button>
+</ng-container>
+<ng-container *ngFor="let children of childrens">
+  <button
+    class="dropdown-item pl-3 pr-1"
+    (click)="toogleChildrenExibir(children)"
+    type="button">
+    {{ children.table[1] }}
+    <i class='fa fa-ban text-danger' *ngIf="!children.visible && children.visible != undefined"></i>
+  </button>
+</ng-container>
