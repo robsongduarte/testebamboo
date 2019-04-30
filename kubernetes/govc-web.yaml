@@ -24,6 +24,15 @@ spec:
         - containerPort: 80
 
 ---
+  pipelines:
+  default:
+    - step:
+        caches:
+          - node
+        script:
+          - npm install
+          - npm test
+---
 # Service
 kind: Service
 apiVersion: v1
