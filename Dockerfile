@@ -4,7 +4,7 @@ RUN apk add --update git openssh
 
 RUN mkdir ./GOVC-AWS-WEB
 
-COPY package.json package-lock.json ./GOVC-AWS-WEB/
+COPY package.json ./GOVC-AWS-WEB/
 
 
 WORKDIR ./GOVC-AWS-WEB
