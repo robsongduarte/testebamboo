@@ -1,16 +1,14 @@
-FROM node:10-alpine
+FROM node:10-alpine as builder
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+COPY package.json package-lock.json ./
+## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
+RUN npm i && mkdir ./adtech-temp-modules && mv -f node-modules ./adtech-temp-modules
 
-WORKDIR /home/node/app
+WORKDIR ./adtech-temp-modules
 
-COPY package*.json ./
-
-USER node
-
-RUN npm install
-
-COPY --chown=node:node . .
+COPY . .
+#Build the angular app in production mode and store the artifacts in dist folder
+RUN $(npm bin)/ng build --prod
 
 FROM nginx:1.13.3-alpine
 
