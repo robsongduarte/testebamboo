@@ -1,14 +1,16 @@
 FROM node:10-alpine as builder
+RUN npm install -g @angular/cli
+RUN apk add --update git openssh
 
-COPY package.json package-lock.json ./
-## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
-RUN npm i && mkdir ./adtech-temp-modules && mv -f node-modules ./adtech-temp-modules
+RUN mkdir ./GOVC-AWS-WEB
 
-WORKDIR ./adtech-temp-modules
+COPY package.json package-lock.json ./adtech-prj/
 
+
+WORKDIR ./GOVC-AWS-WEB
 COPY . .
-#Build the angular app in production mode and store the artifacts in dist folder
-RUN $(npm bin)/ng build --prod
+
+RUN npm cache clear --force  && npm i
 
 FROM nginx:1.13.3-alpine
 
