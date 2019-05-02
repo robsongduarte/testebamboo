@@ -1,16 +1,20 @@
 # We label our stage as ‘builder’
 FROM node:10-alpine as builder
 
-## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
-RUN npm i && mkdir /ng-app && mv ./node_modules ./ng-app
+# Create app directory
+WORKDIR /usr/src/app
 
-WORKDIR /ng-app
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+# Bundle app source
 COPY . .
-
-## Build the angular app in production mode and store the artifacts in dist folder
-RUN $(npm bin)/ng build --prod --output-path=dist
-
 
 FROM nginx:1.13.3-alpine
 
