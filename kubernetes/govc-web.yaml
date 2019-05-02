@@ -1,6 +1,6 @@
 ---
 # Deployment
-apiVersion: apps/v1
+aprriVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: kube-system
@@ -19,12 +19,12 @@ spec:
     spec:
       containers:
       - name: govc-aws-web
-        image: 116762053366.dkr.ecr.us-east-1.amazonaws.com/govc-aws-web:__TAG__
+        image: 116762053366.dkr.ecr.us-east-1.amazonaws.com/govc-aws-web:__TAG__dfdf
         ports:
         - containerPort: 80
 
 ---
-  pipelines:
+  pipe44lines:
   default:
     - step:
         caches:
