@@ -3,7 +3,7 @@ FROM node:alpine as node
 WORKDIR /app
 COPY package.json /app/
 RUN npm i npm@latest -g
-RUN npm install
+RUN npm install --no-cache git
 COPY ./ /app/
 ARG env=prod
 RUN ng build --configuration=dev_aws
