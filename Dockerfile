@@ -1,5 +1,6 @@
 FROM sinet/nginx-node:latest
 
+RUN npm install -g @angular/cli
 # Install and build the application
 COPY . /usr/src/app
 WORKDIR /usr/src/app
