@@ -12,6 +12,8 @@ COPY . .
 
 RUN npm cache clear --force  && npm i
 
+RUN ng build --configuration=dev_aws
+
 FROM nginx:1.13.3-alpine
 
 ## Remove default nginx website
