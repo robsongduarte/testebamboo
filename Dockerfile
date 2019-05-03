@@ -10,7 +10,7 @@ COPY package.json ./GOVC-AWS-WEB/
 WORKDIR ./GOVC-AWS-WEB
 COPY . .
 
-RUN npm cache clear --force  && npm i
+RUN npm install
 
 RUN ng build --configuration=dev_aws
 
@@ -21,5 +21,6 @@ RUN rm -rf /usr/share/nginx/html/*
 
 ## From 'builder' stage copy over the artifacts in dist folder to default nginx public folder
 COPY /dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD ["nginx", "-g", "daemon off;"]
