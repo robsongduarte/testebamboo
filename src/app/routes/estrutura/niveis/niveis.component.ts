@@ -35,6 +35,7 @@ export class NiveisComponent implements OnInit {
   public value: string = null;
 
   public ngxValueEmpresa: number;
+  public p: number;
 
   public dtInicio: Date = new Date();
   public dtFim: Date = new Date();

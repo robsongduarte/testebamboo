@@ -36,6 +36,7 @@ export class IncluirCargoComponent implements OnInit {
   public ngxAssinatura: number = 0;
   public cdCargo: number = 0;
   public indexQuadro: number = 0;
+  public p: number;
 
   public quadroAssinatura: QuadroAssinatura;
 

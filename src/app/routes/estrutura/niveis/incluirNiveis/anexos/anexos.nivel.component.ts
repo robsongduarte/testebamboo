@@ -17,6 +17,8 @@ import { Nivel } from '../../../../../model/nivel';
 })
 export class AnexosNivelComponent implements OnInit {
 
+  public p: number;
+
   @Input() cdNivel: number
 
   anexos: NivelAnexo[] = []

@@ -21,8 +21,6 @@ import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
-import { DatepickerModule } from 'ngx-bootstrap/datepicker';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 import { FlotDirective } from './directives/flot/flot.directive';
 import { SparklineDirective } from './directives/sparkline/sparkline.directive';
@@ -54,8 +52,6 @@ import { ModalComponent } from './components/historico/modal/modal.component';
         ButtonsModule.forRoot(),
         CarouselModule.forRoot(),
         CollapseModule.forRoot(),
-        DatepickerModule.forRoot(),
-        BsDatepickerModule.forRoot(),
         BsDropdownModule.forRoot(),
         ModalModule.forRoot(),
         PaginationModule.forRoot(),
@@ -101,8 +97,6 @@ import { ModalComponent } from './components/historico/modal/modal.component';
         ButtonsModule,
         CarouselModule,
         CollapseModule,
-        DatepickerModule,
-        BsDatepickerModule,
         BsDropdownModule,
         ModalModule,
         PaginationModule,

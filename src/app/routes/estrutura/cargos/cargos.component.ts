@@ -18,6 +18,7 @@ export class CargosComponent implements OnInit {
 
   public title: string;
   public ngxSituacao: string = 'TODAS';
+  public p: number;
   
   public itemsSituacao: any[] = [{'id':'TODAS', 'situacao':'Todas'},
                                  {'id':'ATIVA', 'situacao':'Ativa'},

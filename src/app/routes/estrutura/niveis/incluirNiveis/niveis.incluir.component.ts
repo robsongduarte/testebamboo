@@ -78,6 +78,9 @@ export class NiveisIncluirComponent implements OnInit {
   public ngxTipoNivel: number;
   public ngxLocalidade: number = 0;
   public ngxValueEmpresa: number = 0;
+  public p: number;
+
+
   public nivelSelecionado: any;
 
   public item: any;

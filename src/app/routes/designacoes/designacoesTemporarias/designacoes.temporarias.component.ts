@@ -32,6 +32,7 @@ export class DesignacoesTemporariasComponent implements OnInit {
   public ngxValueEmpresa: number = 0;
   public ngxValueEmitente: number = 0;
   public ngxDominioStatus: number = 0;
+  public p: number;
 
   public habilitarEmitente: boolean = true;
 

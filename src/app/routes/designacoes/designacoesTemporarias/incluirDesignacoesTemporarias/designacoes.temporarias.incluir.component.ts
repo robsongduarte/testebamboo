@@ -70,6 +70,7 @@ export class DesignacoesTemporariasIncluirComponent implements OnInit {
   public ngxValueSignatario: number;
   public tipoDocumento: number = 19;
   public cdDocumento: number = 0;
+  public p: number;
 
   public ngxValueEmpresas: any = [];
   public ngxValueNiveis: any = [];

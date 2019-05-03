@@ -18,6 +18,8 @@ import { SweetAlertOptions } from 'sweetalert2'
 })
 export class AnexosIncluirDesignacoesComponent implements OnInit {
 
+  public p: number;
+
   @Input() cdEmpresa: number
 
   anexos: EmpresaAnexo[] = []

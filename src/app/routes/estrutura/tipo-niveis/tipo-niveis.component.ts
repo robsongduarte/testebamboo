@@ -13,6 +13,9 @@ import { TipoNivelService } from '../../../service/estrutura/tipo-nivel.service'
 })
 export class TipoNiveisComponent implements OnInit {
 
+  public ngxSituacao: number;
+  public p: number;
+
   formTipoNiveis: FormGroup
   formPesquisaTipoNivel: FormGroup
   tipoNiveis: TipoNivel[] = []
