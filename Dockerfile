@@ -17,10 +17,10 @@ RUN ng build --configuration=dev_aws
 FROM nginx:1.13.3-alpine
 
 ## Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+RUN rm -rf C:/Ambiente/nginx-1.15.10/html/*
 
 ## From 'builder' stage copy over the artifacts in dist folder to default nginx public folder
-COPY /dist /usr/share/nginx/html
+COPY /dist C:/Ambiente/nginx-1.15.10/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD ["nginx", "-g", "daemon off;"]
