@@ -1,13 +1,13 @@
-FROM sinet/nginx-node:latest
-
-RUN npm install -g @angular/cli
-# Install and build the application
-COPY . /usr/src/app
-WORKDIR /usr/src/app
-RUN npm install 
-
+# Estagio 1 - Será responsavel em construir nossa aplicação
+FROM node:9.11.2-slim as node
+WORKDIR /app
+COPY package.json /app/
+RUN npm i npm@latest -g
+RUN npm install
+COPY ./ /app/
 RUN ng build --configuration=dev_aws
 
-COPY default.conf /etc/nginx/conf.d/
-
-CMD ["nginx", "-g", "daemon off;"]
+# Estagio 2 - Será responsavel por expor a aplicação
+FROM nginx:1.13
+COPY --from=node /app/dist /usr/share/nginx/html
+COPY ./nginx-custom.conf /etc/nginx/conf.d/default.conf
