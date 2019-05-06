@@ -12,10 +12,10 @@ RUN npm run build
 FROM nginx:1.13.3-alpine
 
 ## Remove default nginx website
-RUN rm -rf C:/Ambiente/nginx-1.15.10/html/*
+RUN rm -rf /usr/share/nginx/html/*
 
 ## From 'builder' stage copy over the artifacts in dist folder to default nginx public folder
-COPY /dist C:/Ambiente/nginx-1.15.10/html
+COPY /dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD ["nginx", "-g", "daemon off;"]
