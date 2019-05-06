@@ -1,8 +1,8 @@
 # Estagio 1 - Será responsavel em construir nossa aplicação
-FROM node:10.13.0-slim as node
+FROM node:10.13.0-alpine as node
 WORKDIR /app
 COPY package.json /app/
-RUN apk add --no-cache git
+RUN apk --no-cache add git
 RUN npm install
 COPY ./ /app/
 ARG env=prod
