@@ -9,7 +9,7 @@
     "ng": "ng",
     "install": "npm run napa",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build --configuration=dev_aws",
     "test": "ng test",
     "lint": "ng lint",
     "modernizr": "modernizr -c modernizr-config.json -d src/modernizr.js",

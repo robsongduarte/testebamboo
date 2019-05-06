@@ -6,7 +6,7 @@ RUN apk --no-cache add git
 RUN npm install
 COPY ./ /app/
 ARG env=prod
-RUN ng build --configuration=dev_aws
+RUN npm run build
 
 # Estagio 2 - Será responsavel por expor a aplicação
 FROM nginx:alpine
