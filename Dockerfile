@@ -1,10 +1,9 @@
 # Estagio 1 - Será responsavel em construir nossa aplicação
-FROM node:alpine as node
+FROM node:9.11.2-slim as node
 WORKDIR /app
 COPY package.json /app/
 RUN npm i npm@latest -g
-RUN npm install -g angular-cli
-RUN npm install --no-cache git
+RUN npm install
 COPY ./ /app/
 ARG env=prod
 RUN ng build --configuration=dev_aws
