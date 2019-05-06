@@ -2,6 +2,7 @@
 FROM node:10.13.0-slim as node
 WORKDIR /app
 COPY package.json /app/
+RUN apk add --no-cache git
 RUN npm install
 COPY ./ /app/
 ARG env=prod
